@@ -1,21 +1,27 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import HomeScreen from './path/to/HomeScreen'; // Ajusta la ruta
+import { NavigationContainer } from "@react-navigation/native";
+import { createDrawerNavigator } from "@react-navigation/drawer";
+import HomeScreen from "./screens/HomeScreen";
+import NearMeScreen from "./screens/NearMeScreen";
+import PopularScreen from "./screens/PopularScreen";
+import DiscountScreen from "./screens/DiscountScreen";
+import 'react-native-gesture-handler';
 
-const Stack = createNativeStackNavigator();
+const Drawer = createDrawerNavigator();
 
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator>
-        <Stack.Screen 
-          name="Home" 
-          component={HomeScreen} 
-          options={{ headerShown: false }} // <-- Aquí ocultas el header
-        />
-        {/* Otras pantallas aquí */}
-      </Stack.Navigator>
+      <Drawer.Navigator
+        initialRouteName="Home"
+        screenOptions={{
+          headerShown: false, // Oculta el encabezado predeterminado
+        }}
+      >
+        <Drawer.Screen name="Home" component={HomeScreen} />
+        <Drawer.Screen name="Near Me" component={NearMeScreen} />
+        <Drawer.Screen name="Popular" component={PopularScreen} />
+        <Drawer.Screen name="Discounts" component={DiscountScreen} />
+      </Drawer.Navigator>
     </NavigationContainer>
   );
 }

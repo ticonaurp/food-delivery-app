@@ -8,17 +8,20 @@ import {
   TextInput,
   StyleSheet,
 } from "react-native";
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 
+import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import Carousel from "react-native-reanimated-carousel";
 import AnimatedDotsCarousel from "react-native-animated-dots-carousel";
+import { TouchableOpacity } from "react-native";
 
+import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
+import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
 
-// Promociones semanales
 const weeklyDeals = [
   {
     id: "1",
@@ -29,7 +32,7 @@ const weeklyDeals = [
   {
     id: "2",
     title: "Weekly Best Deals",
-    image: require("../../assets/pizza2.png"),
+    image: require("../../assets/burger.png"),
     description: "Off up to 50%",
   },
   {
@@ -40,48 +43,33 @@ const weeklyDeals = [
   },
 ];
 
-// Datos para Daily Dishes y sección "Already"
-const dailyDishes = [
-  { label: "Customer Top Picks", count: 546 },
-  { label: "Fast Food", count: 546 },
-  { label: "Restaurant Already", count: null },
-  { label: "Beverages", count: 189 },
-  { label: "Restaurant Already", count: null },
-  { label: "Desserts", count: 891 },
-  { label: "Restaurant Already", count: null },
-];
-
-// Quick menu con iconos
 const quickMenuItems = [
   {
-    label: "Near Me",
-    icon: (
-      <MaterialCommunityIcons
-        name="map-marker-radius"
-        size={20}
-        color="#f43f5e"
-      />
-    ),
+    label: "Near me",
+    icon: <FontAwesome6 name="map-location-dot" size={28} color="#f43f5e" />,
+    route: "NearMeScreen",
   },
   {
     label: "Popular",
-    icon: <Ionicons name="flame-outline" size={20} color="#f43f5e" />,
+    icon: <FontAwesome5 name="award" size={28} color="#f43f5e" />,
+    route: "PopularScreen",
   },
   {
     label: "Discount",
-    icon: <MaterialIcons name="discount" size={20} color="#f43f5e" />,
+    icon: <MaterialIcons name="discount" size={28} color="#f43f5e" />,
+    route: "DiscountScreen",
   },
   {
     label: "24 Hours",
-    icon: <FontAwesome name="clock-o" size={20} color="#f43f5e" />,
+    icon: <MaterialCommunityIcons name="hours-24" size={28} color="#f43f5e" />,
+    route: "AllDayScreen",
   },
   {
-    label: "Quick Meals",
-    icon: <MaterialIcons name="fastfood" size={20} color="#f43f5e" />,
+    label: "Quick Delivery",
+    icon: <MaterialIcons name="delivery-dining" size={28} color="#f43f5e" />,
+    route: "QuickDeliveryScreen",
   },
 ];
-
-// ... (imports sin cambios)
 
 export default function HomeScreen() {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -106,30 +94,38 @@ export default function HomeScreen() {
     })();
   }, []);
 
-  const decreasingDots = Array(5).fill(0).map((_, i) => ({
-    quantity: 1,
-    config: {
-      opacity: 1 - i * 0.2,
-      color: "#FF5864",
-      margin: 4,
-      size: 8,
-    },
-  }));
+  // Aquí usamos el tipo en useNavigation para evitar error de tipos
+  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+
+  const decreasingDots = Array(5)
+    .fill(0)
+    .map((_, i) => ({
+      quantity: 1,
+      config: {
+        opacity: 1 - i * 0.2,
+        color: "#FF5864",
+        margin: 4,
+        size: 8,
+      },
+    }));
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.addressRow}>
-          <Ionicons name="location-outline" size={20} color="#fff" />
-          <Text style={styles.addressText}>{currentAddress}</Text>
-          <View style={{ flexDirection: "row", marginLeft: "auto" }}>
-            <Ionicons name="heart-outline" size={20} color="#fff" style={{ marginHorizontal: 8 }} />
-            <Ionicons name="notifications-outline" size={20} color="#fff" />
-          </View>
-        </View>
+      {/* ... tu UI existente ... */}
 
-        {/* Search */}
+      <View style={styles.quickMenu}>
+        {quickMenuItems.map(({ label, icon, route }) => (
+          <TouchableOpacity
+            key={label}
+            style={styles.quickMenuItem}
+            onPress={() => navigation.navigate(route)} // ya validado
+          >
+            {icon}
+            <Text style={styles.quickMenuText}>{label}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
         <View style={styles.searchBox}>
           <Ionicons name="search-outline" size={20} color="#aaa" />
           <TextInput
@@ -137,12 +133,12 @@ export default function HomeScreen() {
             placeholderTextColor="#aaa"
             style={styles.input}
           />
-        </View>
       </View>
 
-      {/* Carrusel de Promociones */}
       {weeklyDeals.length > 0 && (
-        <View style={{ width: "100%", paddingLeft: 16, alignItems: "flex-start" }}>
+        <View
+          style={{ width: "100%", paddingLeft: 16, alignItems: "flex-start" }}
+        >
           <Carousel
             loop
             width={320}
@@ -150,7 +146,7 @@ export default function HomeScreen() {
             autoPlay={true}
             data={weeklyDeals}
             onSnapToItem={(index) => setCurrentIndex(index)}
-            scrollAnimationDuration={2000}
+            scrollAnimationDuration={1200}
             mode="parallax"
             modeConfig={{
               parallaxScrollingScale: 0.9,
@@ -165,7 +161,9 @@ export default function HomeScreen() {
               >
                 <View style={styles.dealTextContainer}>
                   <Text style={styles.mainDealTitle}>{item.title}</Text>
-                  <Text style={styles.mainDealSubtitle}>{item.description}</Text>
+                  <Text style={styles.mainDealSubtitle}>
+                    {item.description}
+                  </Text>
                 </View>
                 <View style={styles.promoImageContainer}>
                   <Image
@@ -199,17 +197,81 @@ export default function HomeScreen() {
         </View>
       )}
 
-      {/* Quick Menu */}
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "space-between",
+          marginHorizontal: 16,
+          marginTop: 16,
+        }}
+      >
+        {/* Wallet */}
+        <View
+          style={{
+            flexDirection: "row",
+            backgroundColor: "#FEF3C7", // amarillo claro
+            padding: 16,
+            borderRadius: 16,
+            alignItems: "center",
+            flex: 1,
+            marginRight: 8,
+          }}
+        >
+          <Ionicons name="wallet-outline" size={30} color="#F59E0B" />
+          <View style={{ marginLeft: 12 }}>
+            <Text style={{ fontSize: 12, color: "#6B7280" }}>Your Wallet</Text>
+            <Text
+              style={{ fontSize: 12, fontWeight: "bold", color: "#1F2937" }}
+            >
+              S/. 45.00
+            </Text>
+          </View>
+        </View>
+
+        {/* Coins */}
+        <View
+          style={{
+            flexDirection: "row",
+            backgroundColor: "#D1FAE5", // verde claro
+            padding: 16,
+            borderRadius: 16,
+            alignItems: "center",
+            flex: 1,
+            marginLeft: 8,
+          }}
+        >
+          <FontAwesome6 name="coins" size={30} color="#10B981" />
+          <View style={{ marginLeft: 12 }}>
+            <Text style={{ fontSize: 12, color: "#6B7280" }}>Your Coins</Text>
+            <Text
+              style={{ fontSize: 12, fontWeight: "bold", color: "#1F2937" }}
+            >
+              1200
+            </Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Aquí se usa quickMenuItems para mostrar el menú rápido, en la posición que ya tenías */}
       <View style={styles.quickMenu}>
-        {quickMenuItems.map(({ label, icon }) => (
-          <View key={label} style={styles.quickMenuItem}>
+        {quickMenuItems.map(({ label, icon, route: routeName }) => (
+          <TouchableOpacity
+            key={label}
+            style={styles.quickMenuItem}
+            onPress={() => {
+              if (routeName) {
+                navigation.navigate(routeName);
+              } else {
+                console.warn("Route name is not defined for", label);
+              }
+            }}
+          >
             {icon}
             <Text style={styles.quickMenuText}>{label}</Text>
-          </View>
+          </TouchableOpacity>
         ))}
       </View>
 
-      {/* Daily Dishes Grid */}
       <View style={styles.dailyGrid}>
         <Text style={styles.sectionTitle}>Daily Dishes</Text>
         {[
@@ -218,15 +280,21 @@ export default function HomeScreen() {
           { title: "Beverages", count: "189", color: "#fb923c" },
           { title: "Desserts", count: "891", color: "#06b6d4" },
         ].map((item, i) => (
-          <View key={i} style={[styles.dishCard, { backgroundColor: item.color }]}>
+          <View
+            key={i}
+            style={[styles.dishCard, { backgroundColor: item.color }]}
+          >
             <Text style={styles.dishTitle}>{item.title}</Text>
-            <Text style={styles.dishSubtitle}>{item.count} Restaurant Already</Text>
+            <Text style={styles.dishSubtitle}>
+              {item.count} Restaurant Already
+            </Text>
           </View>
         ))}
       </View>
     </ScrollView>
   );
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -290,57 +358,61 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   promoImageContainer: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
+    width: 110,
+    height: 110,
     overflow: "hidden",
+    borderRadius: 60,
   },
   promoImage: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: "100%",
+    height: "100%",
+    borderRadius: 60,
   },
   quickMenu: {
     flexDirection: "row",
     justifyContent: "space-around",
-    marginVertical: 20,
-    paddingHorizontal: 16,
+    marginTop: 20,
+    marginHorizontal: 16,
   },
   quickMenuItem: {
-    flexDirection: "row",
     alignItems: "center",
+    width: 70,
   },
   quickMenuText: {
+    marginTop: 8,
+    fontSize: 12,
     fontWeight: "600",
-    marginLeft: 6,
-    color: "#f43f5e",
+    color: "#374151",
+    textAlign: "center",
   },
   dailyGrid: {
+    marginTop: 24,
     paddingHorizontal: 16,
-    marginBottom: 30,
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
   },
   sectionTitle: {
-    fontSize: 18,
     fontWeight: "bold",
+    fontSize: 18,
     marginBottom: 12,
+    width: "100%",
   },
   dishCard: {
-    padding: 16,
-    borderRadius: 16,
-    marginBottom: 12,
+    width: "48%",
+    borderRadius: 14,
+    padding: 12,
+    marginBottom: 16,
+    justifyContent: "center",
   },
   dishTitle: {
-    color: "#fff",
-    fontSize: 16,
     fontWeight: "bold",
+    fontSize: 16,
+    color: "#fff",
+    marginBottom: 6,
   },
   dishSubtitle: {
-    color: "#fff",
-    fontSize: 13,
-    marginTop: 4,
+    fontSize: 12,
+    color: "#F3F4F6",
   },
 });
-
