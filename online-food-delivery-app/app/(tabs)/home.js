@@ -8,9 +8,8 @@ import {
   TextInput,
   StyleSheet,
 } from "react-native";
-import { NavigationProp, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 
-import { useNavigation } from "@react-navigation/native";
 import { LinearGradient } from "expo-linear-gradient";
 import Carousel from "react-native-reanimated-carousel";
 import AnimatedDotsCarousel from "react-native-animated-dots-carousel";
@@ -94,8 +93,7 @@ export default function HomeScreen() {
     })();
   }, []);
 
-  // Aquí usamos el tipo en useNavigation para evitar error de tipos
-  const navigation = useNavigation<NavigationProp<RootStackParamList>>();
+  const navigation = useNavigation();
 
   const decreasingDots = Array(5)
     .fill(0)
@@ -111,28 +109,22 @@ export default function HomeScreen() {
 
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* ... tu UI existente ... */}
-
-      <View style={styles.quickMenu}>
-        {quickMenuItems.map(({ label, icon, route }) => (
-          <TouchableOpacity
-            key={label}
-            style={styles.quickMenuItem}
-            onPress={() => navigation.navigate(route)} // ya validado
-          >
-            {icon}
-            <Text style={styles.quickMenuText}>{label}</Text>
-          </TouchableOpacity>
-        ))}
+      {/* Menú rosa en la parte superior */}
+      <View style={styles.header}>
+        <Text style={styles.addressText}>{currentAddress}</Text>
+        <View style={styles.iconContainer}>
+          <Ionicons name="notifications-outline" size={24} color="#fff" />
+          <FontAwesome5 name="heart" size={24} color="#fff" style={{ marginLeft: 10 }} />
+        </View>
       </View>
 
-        <View style={styles.searchBox}>
-          <Ionicons name="search-outline" size={20} color="#aaa" />
-          <TextInput
-            placeholder="What would you like to eat?"
-            placeholderTextColor="#aaa"
-            style={styles.input}
-          />
+      <View style={styles.searchBox}>
+        <Ionicons name="search-outline" size={20} color="#aaa" />
+        <TextInput
+          placeholder="What would you like to eat?"
+          placeholderTextColor="#aaa"
+          style={styles.input}
+        />
       </View>
 
       {weeklyDeals.length > 0 && (
@@ -197,74 +189,12 @@ export default function HomeScreen() {
         </View>
       )}
 
-      <View
-        style={{
-          flexDirection: "row",
-          justifyContent: "space-between",
-          marginHorizontal: 16,
-          marginTop: 16,
-        }}
-      >
-        {/* Wallet */}
-        <View
-          style={{
-            flexDirection: "row",
-            backgroundColor: "#FEF3C7", // amarillo claro
-            padding: 16,
-            borderRadius: 16,
-            alignItems: "center",
-            flex: 1,
-            marginRight: 8,
-          }}
-        >
-          <Ionicons name="wallet-outline" size={30} color="#F59E0B" />
-          <View style={{ marginLeft: 12 }}>
-            <Text style={{ fontSize: 12, color: "#6B7280" }}>Your Wallet</Text>
-            <Text
-              style={{ fontSize: 12, fontWeight: "bold", color: "#1F2937" }}
-            >
-              S/. 45.00
-            </Text>
-          </View>
-        </View>
-
-        {/* Coins */}
-        <View
-          style={{
-            flexDirection: "row",
-            backgroundColor: "#D1FAE5", // verde claro
-            padding: 16,
-            borderRadius: 16,
-            alignItems: "center",
-            flex: 1,
-            marginLeft: 8,
-          }}
-        >
-          <FontAwesome6 name="coins" size={30} color="#10B981" />
-          <View style={{ marginLeft: 12 }}>
-            <Text style={{ fontSize: 12, color: "#6B7280" }}>Your Coins</Text>
-            <Text
-              style={{ fontSize: 12, fontWeight: "bold", color: "#1F2937" }}
-            >
-              1200
-            </Text>
-          </View>
-        </View>
-      </View>
-
-      {/* Aquí se usa quickMenuItems para mostrar el menú rápido, en la posición que ya tenías */}
       <View style={styles.quickMenu}>
-        {quickMenuItems.map(({ label, icon, route: routeName }) => (
+        {quickMenuItems.map(({ label, icon, route }) => (
           <TouchableOpacity
             key={label}
             style={styles.quickMenuItem}
-            onPress={() => {
-              if (routeName) {
-                navigation.navigate(routeName);
-              } else {
-                console.warn("Route name is not defined for", label);
-              }
-            }}
+            onPress={() => navigation.navigate(route)}
           >
             {icon}
             <Text style={styles.quickMenuText}>{label}</Text>
@@ -295,7 +225,6 @@ export default function HomeScreen() {
   );
 }
 
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -308,17 +237,17 @@ const styles = StyleSheet.create({
     paddingBottom: 20,
     borderBottomLeftRadius: 20,
     borderBottomRightRadius: 20,
-  },
-  addressRow: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 10,
   },
   addressText: {
     color: "#fff",
     fontWeight: "600",
-    marginLeft: 8,
     fontSize: 14,
+  },
+  iconContainer: {
+    flexDirection: "row",
   },
   searchBox: {
     flexDirection: "row",
