@@ -1,6 +1,6 @@
 import React from "react";
 import { View, Text, StyleSheet } from "react-native";
-import { quickMenuItems } from "../data/constants";
+import { quickMenuItems } from "../screens/data/constants";
 
 export default function QuickMenu() {
   return (

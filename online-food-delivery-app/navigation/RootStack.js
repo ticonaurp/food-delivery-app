@@ -1,16 +1,26 @@
-import React from "react";
-import { createStackNavigator } from "@react-navigation/stack";
-import HomeScreen from "../screens/HomeScreen";
-import NearMeScreen from "../screens/NearMeScreen";
+// navigation/RootStack.js
+import React from 'react';
+import { createStackNavigator } from '@react-navigation/stack';
+import TabLayout from './TabLayout';
+import NearMeScreen from '../screens/NearMeScreen';
 
 const Stack = createStackNavigator();
 
-export default function RootStack() {
+const RootStack = () => {
   return (
-    <Stack.Navigator initialRouteName="Home" screenOptions={{ headerTitleAlign: "center" }}>
-      <Stack.Screen name="Home" component={HomeScreen} options={{ title: "Home" }} />
-      <Stack.Screen name="NearMeScreen" component={NearMeScreen} options={{ title: "Near Me" }} />
-      {/* Otros screens */}
+    <Stack.Navigator initialRouteName="MainTabs">
+      <Stack.Screen
+        name="MainTabs"
+        component={TabLayout}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="NearMeScreen"
+        component={NearMeScreen}
+        options={{ title: "Near Me" }}
+      />
     </Stack.Navigator>
   );
-}
+};
+
+export default RootStack;

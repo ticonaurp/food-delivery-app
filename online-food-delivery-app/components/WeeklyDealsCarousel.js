@@ -3,7 +3,7 @@ import { View, Text, Image, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Carousel from "react-native-reanimated-carousel";
 import AnimatedDotsCarousel from "react-native-animated-dots-carousel";
-import { weeklyDeals } from "../data/constants";
+import { weeklyDeals } from "../screens/data/constants";
 
 export default function WeeklyDealsCarousel({ currentIndex, setCurrentIndex }) {
   const decreasingDots = Array(5).fill(0).map((_, i) => ({
