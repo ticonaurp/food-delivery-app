@@ -87,11 +87,27 @@ const dailyDishes = [
   },
 ];
 
+const additionalDishes = [
+  {
+    title: "Pizza",
+    count: "150",
+    color: "#3b5afe",
+  },
+  {
+    title: "Salads",
+    count: "230",
+    color: "#f59e0b",
+  },
+  // ... agrega más platos según sea necesario
+];
+
 export default function HomeScreen() {
   const navigation = useNavigation();
 
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentAddress, setCurrentAddress] = useState("Fetching location...");
+  const [showMoreDishes, setShowMoreDishes] = useState(false); // nuevo estado
+
 
   useEffect(() => {
     const fetchLocation = async () => {
@@ -249,14 +265,23 @@ export default function HomeScreen() {
       {/* Daily Dishes Header */}
       <View style={styles.dailyHeader}>
         <Text style={styles.dailyTitle}>Daily Dishes</Text>
-        <TouchableOpacity>
-          <Text style={styles.seeAllText}>See all</Text>
+        <TouchableOpacity onPress={() => setShowMoreDishes(!showMoreDishes)}>
+          <Text style={styles.seeAllText}>
+            {showMoreDishes ? "See less" : "See all"}
+          </Text>
         </TouchableOpacity>
       </View>
+
 
       {/* Daily Dishes Categories */}
       <View style={styles.dailyGrid}>
         {dailyDishes.map((item, i) => (
+          <View key={i} style={[styles.dishCard, { backgroundColor: item.color }]}>
+            <Text style={styles.dishTitle}>{item.title}</Text>
+            <Text style={styles.dishSubtitle}>{item.count} Restaurant Already</Text>
+          </View>
+        ))}
+        {showMoreDishes && additionalDishes.map((item, i) => (
           <View key={i} style={[styles.dishCard, { backgroundColor: item.color }]}>
             <Text style={styles.dishTitle}>{item.title}</Text>
             <Text style={styles.dishSubtitle}>{item.count} Restaurant Already</Text>

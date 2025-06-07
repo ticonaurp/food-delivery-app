@@ -1,9 +1,7 @@
 import React from 'react';
 import { View, Text, FlatList, StyleSheet, TouchableOpacity, Image } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; 
+import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
-
-
 
 const data = [
     {
@@ -57,50 +55,55 @@ const data = [
 ];
 
 const NearMeScreen = () => {
-  const navigation = useNavigation(); // <- Cambiado
+    const navigation = useNavigation();
 
-  const navigateToHome = () => {
-    navigation.navigate('HomeMain');
-
-  };
+    const navigateToHome = () => {
+        navigation.navigate('HomeMain');
+    };
 
     const renderItem = ({ item }) => (
-        <View style={styles.card}>
-            <View style={styles.cardContent}>
-                <Image source={item.imageUrl} style={styles.image} />
-                <View style={styles.textContainer}>
-                    <Text style={styles.title}>{item.name}</Text>
-                    <View style={styles.infoContainer}>
-                        <View style={styles.ratingContainer}>
-                            <Text style={styles.rating}>⭐ {item.rating}</Text>
-                            <Text style={styles.reviewCount}>({item.reviews})</Text>
+        <TouchableOpacity onPress={() => navigation.navigate('DetailRestoran', { restaurant: item })}>
+            <View style={styles.card}>
+                <View style={styles.cardContent}>
+                    <Image source={item.imageUrl} style={styles.image} />
+                    <View style={styles.textContainer}>
+                        <Text style={styles.title}>{item.name}</Text>
+                        <View style={styles.infoContainer}>
+                            <View style={styles.ratingContainer}>
+                                <Text style={styles.rating}>⭐ {item.rating}</Text>
+                                <Text style={styles.reviewCount}>({item.reviews})</Text>
+                            </View>
+                            <TouchableOpacity>
+                                <Ionicons name="heart-outline" size={24} color="red" />
+                            </TouchableOpacity>
                         </View>
-                        <TouchableOpacity>
-                            <Ionicons name="heart-outline" size={24} color="red" />
-                        </TouchableOpacity>
+                        <Text style={styles.description}>{item.description}</Text>
+                        <Text style={styles.detailsText}>
+                            Start from {item.price} • {item.distance} • Delivery {item.deliveryTime}
+                        </Text>
+                        {item.freeDelivery && <Text style={styles.freeDelivery}>Free delivery</Text>}
+                        {item.promo && <Text style={styles.promo}>{item.promo}</Text>}
                     </View>
-                    <Text>{item.description}</Text>
-                    <Text>Start from 49rb • {item.distance} • Delivery {item.deliveryTime}</Text>
-                    {item.freeDelivery && <Text style={styles.freeDelivery}>Free delivery</Text>}
-                    {item.promo && <Text style={styles.promo}>{item.promo}</Text>}
                 </View>
             </View>
-        </View>
+        </TouchableOpacity>
     );
+
+
 
     return (
         <View style={styles.container}>
-            <Text style={styles.header}>Near Me</Text>
-            <Text style={styles.subHeader}>Dishes near me</Text>
-            <Text style={styles.recommendation}>Catch delicious eats near you</Text>
-
+            <Text style={styles.header}>Dishes near me</Text>
+            <Text style={styles.subHeader}>Dishes Near You</Text>
+            <Text style={styles.recommendation}>Discover delicious meals nearby</Text>
             <View style={styles.filterContainer}>
                 <TouchableOpacity style={styles.filterButton}><Text style={styles.filterText}>Filter</Text></TouchableOpacity>
                 <TouchableOpacity style={styles.filterButton}><Text style={styles.filterText}>Discount promo</Text></TouchableOpacity>
                 <TouchableOpacity style={styles.filterButton}><Text style={styles.filterText}>Recommended</Text></TouchableOpacity>
-                <TouchableOpacity onPress={navigateToHome}><Text>Go to Home</Text></TouchableOpacity>
+                <TouchableOpacity onPress={navigateToHome} style={styles.homeButton}>
+                    <Text style={styles.homeButtonText}>Home</Text>
+                </TouchableOpacity>
             </View>
-
             <FlatList
                 data={data}
                 renderItem={renderItem}
@@ -118,45 +121,62 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     header: {
-        fontSize: 24,
+        fontSize: 18,
         fontWeight: 'bold',
-        marginBottom: 8,
+        marginBottom: 4,
     },
     subHeader: {
-        fontSize: 18,
-        marginBottom: 8,
+        fontSize: 14,
+        marginBottom: 4,
     },
     recommendation: {
-        fontSize: 16,
+        fontSize: 14,
         marginBottom: 16,
     },
     filterContainer: {
         flexDirection: 'row',
-        justifyContent: 'space-around',
+        justifyContent: 'space-between',
         marginBottom: 16,
     },
     filterButton: {
-        backgroundColor: '#f0f0f0',
-        padding: 10,
-        borderRadius: 8,
+        backgroundColor: '#FFCCCC',
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        borderRadius: 20,
+        elevation: 2,
     },
     filterText: {
-        fontSize: 16,
+        fontSize: 14,
         color: '#000',
     },
-    card: {
-        padding: 12,
-        marginBottom: 12,
+    homeButton: {
+        borderColor: '#FFCCCC',
+        paddingVertical: 8,
+        paddingHorizontal: 12,
+        borderRadius: 20,
         borderWidth: 1,
-        borderColor: '#ccc',
-        borderRadius: 8,
-        backgroundColor: '#f9f9f9',
+    },
+    homeButtonText: {
+        color: '#FFCCCC',
+        fontSize: 14,
+    },
+    card: {
+        padding: 10,
+        marginBottom: 12,
+        borderRadius: 12,
+        backgroundColor: '#FFFFFF',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.2,
+        shadowRadius: 2,
+        borderColor: '#eee',
     },
     cardContent: {
         flexDirection: 'row',
+        alignItems: 'center',
     },
     image: {
-        width: 100, // Tamaño fijo para la imagen
+        width: 100,
         height: 100,
         borderRadius: 8,
         marginRight: 12,
@@ -165,8 +185,16 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     title: {
-        fontSize: 20,
+        fontSize: 18,
         fontWeight: 'bold',
+    },
+    description: {
+        fontSize: 12,
+        marginVertical: 4,
+    },
+    detailsText: {
+        fontSize: 12,
+        color: '#666',
     },
     infoContainer: {
         flexDirection: 'row',
@@ -178,10 +206,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     rating: {
-        fontSize: 16,
+        fontSize: 14,
     },
     reviewCount: {
-        fontSize: 16,
+        fontSize: 14,
         marginLeft: 4,
         color: 'grey',
     },
@@ -192,25 +220,6 @@ const styles = StyleSheet.create({
     freeDelivery: {
         color: 'green',
     },
-    tabBar: {
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        alignItems: 'center',
-        paddingVertical: 10,
-        borderTopWidth: 1,
-        borderColor: '#ccc',
-        backgroundColor: '#fff',
-    },
-    tabItem: {
-        flex: 1,
-        alignItems: 'center',
-    },
-    tabText: {
-        fontSize: 16,
-        color: '#000',
-    },
 });
 
 export default NearMeScreen;
-
-

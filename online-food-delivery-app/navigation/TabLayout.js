@@ -51,15 +51,7 @@ export default function TabLayout() {
           ),
         }}
       />
-      <Tab.Screen
-        name="NearMe"
-        component={NearMeScreen}  // Asegúrate de que NearMeScreen esté como una pantalla en el TabNavigator
-        options={{
-          tabBarIcon: ({ color }) => (
-            <Ionicons name="map" size={24} color={color} />
-          ),
-        }}
-      />
+
     </Tab.Navigator>
   );
 }
