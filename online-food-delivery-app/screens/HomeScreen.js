@@ -1,23 +1,24 @@
-import React, { useState, useEffect } from "react";
+// src/screens/HomeScreen.js
+import React, { useState, useEffect, useRef } from "react";
 import * as Location from "expo-location";
 import {
-  View,
-  Text,
   ScrollView,
-  Image,
-  TextInput,
   StyleSheet,
-  TouchableOpacity,
+  Animated,
+  View,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import Carousel from "react-native-reanimated-carousel";
-import AnimatedDotsCarousel from "react-native-animated-dots-carousel";
+
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import Ionicons from "@expo/vector-icons/Ionicons";
 import { MaterialIcons } from "@expo/vector-icons";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import FontAwesome5 from "@expo/vector-icons/FontAwesome5";
-import { useNavigation } from '@react-navigation/native';
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+
+import Header from "../components/Header";
+import WeeklyDealsCarousel from "../components/WeeklyDealsCarousel";
+import WalletCoins from "../components/WalletCoins";
+import QuickMenu from "../components/QuickMenu";
+import DailyDishes from "../components/DailyDishes";
 
 const weeklyDeals = [
   {
@@ -25,16 +26,38 @@ const weeklyDeals = [
     title: "Today's Best Deals",
     image: require("../assets/pizza1.png"),
     description: "Off up to 75%",
-    gradientColors: ["#ff7a00", "#ff9a00"],
+    gradientColors: ["#FF7A00", "#FF9A00"], // naranja degradado
   },
   {
     id: "2",
     title: "Weekly Best Deals",
     image: require("../assets/burger.png"),
     description: "Off up to 50%",
-    gradientColors: ["#f94a7a", "#f94a7a"],
+    gradientColors: ["#FF4081", "#ff0000"], // rosa a rojo
+  },
+  {
+    id: "3",
+    title: "Top Picks This Week",
+    image: require("../assets/sushi.png"),
+    description: "Up to 30% off",
+    gradientColors: ["#4facfe", "#00f2fe"], // azul claro degradado
+  },
+  {
+    id: "4",
+    title: "Hot Trending Meals",
+    image: require("../assets/tacos.png"),
+    description: "Exclusive deals",
+    gradientColors: ["#43e97b", "#38f9d7"], // verde menta degradado
+  },
+  {
+    id: "5",
+    title: "Only for You",
+    image: require("../assets/noodles.png"),
+    description: "Surprise discount",
+    gradientColors: ["#ff9a9e", "#fad0c4"], // rosado pastel
   },
 ];
+
 
 const quickMenuItems = [
   {
@@ -98,16 +121,17 @@ const additionalDishes = [
     count: "230",
     color: "#f59e0b",
   },
-  // ... agrega más platos según sea necesario
 ];
 
 export default function HomeScreen() {
-  const navigation = useNavigation();
-
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentAddress, setCurrentAddress] = useState("Fetching location...");
-  const [showMoreDishes, setShowMoreDishes] = useState(false); // nuevo estado
+  const [showMoreDishes, setShowMoreDishes] = useState(false);
+  const scrollY = useRef(new Animated.Value(0)).current;
 
+  const fadeInWallet = useRef(new Animated.Value(0)).current;
+  const fadeInMenu = useRef(new Animated.Value(0)).current;
+  const fadeInDishes = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
     const fetchLocation = async () => {
@@ -125,170 +149,119 @@ export default function HomeScreen() {
       }
     };
     fetchLocation();
+
+    // Sequential animation
+    Animated.sequence([
+      Animated.timing(fadeInWallet, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeInMenu, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+      Animated.timing(fadeInDishes, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }),
+    ]).start();
   }, []);
 
-  const decreasingDots = Array(5)
-    .fill(0)
-    .map((_, i) => ({
-      quantity: 1,
-      config: { opacity: 1 - i * 0.2, color: "#FF5864", margin: 4, size: 8 },
-    }));
-
   return (
-    <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
-      {/* Header */}
-      <LinearGradient
-        colors={["#ff5f6d", "#ffc371"]}
-        style={styles.header}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
+    <Animated.ScrollView
+      style={styles.container}
+      showsVerticalScrollIndicator={false}
+      scrollEventThrottle={16}
+      onScroll={Animated.event(
+        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+        { useNativeDriver: true }
+      )}
+    >
+      <Animated.View
+        style={{
+          opacity: scrollY.interpolate({
+            inputRange: [0, 150],
+            outputRange: [1, 0],
+            extrapolate: "clamp",
+          }),
+          transform: [
+            {
+              translateY: scrollY.interpolate({
+                inputRange: [0, 150],
+                outputRange: [0, -50],
+                extrapolate: "clamp",
+              }),
+            },
+          ],
+        }}
       >
-        <View style={{ flex: 1 }}>
-          <Text style={styles.addressLabel}>Your current address</Text>
-          <TouchableOpacity style={styles.addressContainer}>
-            <Text style={styles.addressText}>{currentAddress}</Text>
-            <Ionicons
-              name="chevron-down"
-              size={16}
-              color="white"
-              style={{ marginLeft: 4, marginTop: 2 }}
-            />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.headerIcons}>
-          <TouchableOpacity>
-            <FontAwesome5 name="heart" size={22} color="white" />
-          </TouchableOpacity>
-          <TouchableOpacity style={{ marginLeft: 16 }}>
-            <Ionicons name="notifications-outline" size={22} color="white" />
-          </TouchableOpacity>
-        </View>
-        <View style={styles.searchBox}>
-          <Ionicons name="search-outline" size={20} color="#aaa" />
-          <TextInput
-            placeholder="What would you like to eat?"
-            placeholderTextColor="#aaa"
-            style={styles.input}
-          />
-        </View>
-        <Image
-          source={{
-            uri:
-              "https://storage.googleapis.com/a1aa/image/adc687b5-006d-4ba1-6105-1c8ba29ccb4b.jpg",
-          }}
-          style={styles.headerBgImage}
-          resizeMode="cover"
-          blurRadius={1}
-          fadeDuration={0}
-          accessible={false}
-          importantForAccessibility="no-hide-descendants"
-        />
-      </LinearGradient>
-
-      {/* Weekly Deals Carousel */}
-      <View style={{ width: "100%", paddingLeft: 16, marginTop: 12 }}>
-        <Carousel
-          loop
-          width={320}
-          height={140}
-          autoPlay={true}
-          data={weeklyDeals}
-          onSnapToItem={setCurrentIndex}
-          scrollAnimationDuration={1200}
-          mode="parallax"
-          modeConfig={{ parallaxScrollingScale: 0.9, parallaxScrollingOffset: 40 }}
-          renderItem={({ item }) => (
-            <LinearGradient
-              colors={item.gradientColors}
-              style={styles.mainDealCard}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-            >
-              <View style={styles.dealTextContainer}>
-                <Text style={styles.mainDealTitle}>{item.title}</Text>
-                <Text style={styles.mainDealSubtitle}>{item.description}</Text>
-              </View>
-              {item.image && (
-                <Image
-                  source={item.image}
-                  style={styles.promoImage}
-                  resizeMode="cover"
-                />
-              )}
-            </LinearGradient>
-          )}
-        />
-        <AnimatedDotsCarousel
-          length={weeklyDeals.length}
+        <Header currentAddress={currentAddress} />
+        <WeeklyDealsCarousel
+          weeklyDeals={weeklyDeals}
           currentIndex={currentIndex}
-          maxIndicators={5}
-          interpolateOpacityAndColor={true}
-          decreasingDots={decreasingDots}
-          activeIndicatorConfig={{ color: "#FF5864", margin: 4, opacity: 1, size: 12 }}
-          inactiveIndicatorConfig={{ color: "#FF5864", margin: 4, opacity: 0.3, size: 8 }}
-          style={{ marginTop: 8 }}
+          setCurrentIndex={setCurrentIndex}
         />
-      </View>
+      </Animated.View>
 
-      {/* Wallet and Coins */}
-      <View style={styles.walletCoinsContainer}>
-        <View style={styles.walletCoinsBox}>
-          <FontAwesome5 name="wallet" size={20} color="#ec4899" />
-          <View style={{ marginLeft: 8 }}>
-            <Text style={styles.walletCoinsTitle}>Your Wallet</Text>
-            <Text style={styles.walletCoinsValue}>Rp699.000</Text>
-          </View>
-        </View>
-        <View style={styles.walletCoinsBox}>
-          <FontAwesome5 name="coins" size={20} color="#ec4899" />
-          <View style={{ marginLeft: 8 }}>
-            <Text style={styles.walletCoinsTitle}>Your Coins</Text>
-            <Text style={styles.walletCoinsValue}>1.200</Text>
-          </View>
-        </View>
-      </View>
+      {/* Animated WalletCoins */}
+      <Animated.View
+        style={{
+          opacity: fadeInWallet,
+          transform: [
+            {
+              translateY: fadeInWallet.interpolate({
+                inputRange: [0, 1],
+                outputRange: [20, 0],
+              }),
+            },
+          ],
+        }}
+      >
+        <WalletCoins />
+      </Animated.View>
 
-      {/* Quick Menu */}
-      <View style={styles.quickMenu}>
-        {quickMenuItems.map(({ label, icon, route }) => (
-          <TouchableOpacity
-            key={label}
-            style={styles.quickMenuItem}
-            onPress={() => navigation.navigate(route)}
-          >
-            {icon}
-            <Text style={styles.quickMenuText}>{label}</Text>
-          </TouchableOpacity>
-        ))}
-      </View>
+      {/* Animated QuickMenu */}
+      <Animated.View
+        style={{
+          opacity: fadeInMenu,
+          transform: [
+            {
+              translateY: fadeInMenu.interpolate({
+                inputRange: [0, 1],
+                outputRange: [20, 0],
+              }),
+            },
+          ],
+        }}
+      >
+        <QuickMenu quickMenuItems={quickMenuItems} />
+      </Animated.View>
 
-      {/* Daily Dishes Header */}
-      <View style={styles.dailyHeader}>
-        <Text style={styles.dailyTitle}>Daily Dishes</Text>
-        <TouchableOpacity onPress={() => setShowMoreDishes(!showMoreDishes)}>
-          <Text style={styles.seeAllText}>
-            {showMoreDishes ? "See less" : "See all"}
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-
-      {/* Daily Dishes Categories */}
-      <View style={styles.dailyGrid}>
-        {dailyDishes.map((item, i) => (
-          <View key={i} style={[styles.dishCard, { backgroundColor: item.color }]}>
-            <Text style={styles.dishTitle}>{item.title}</Text>
-            <Text style={styles.dishSubtitle}>{item.count} Restaurant Already</Text>
-          </View>
-        ))}
-        {showMoreDishes && additionalDishes.map((item, i) => (
-          <View key={i} style={[styles.dishCard, { backgroundColor: item.color }]}>
-            <Text style={styles.dishTitle}>{item.title}</Text>
-            <Text style={styles.dishSubtitle}>{item.count} Restaurant Already</Text>
-          </View>
-        ))}
-      </View>
-    </ScrollView>
+      {/* Animated DailyDishes */}
+      <Animated.View
+        style={{
+          opacity: fadeInDishes,
+          transform: [
+            {
+              translateY: fadeInDishes.interpolate({
+                inputRange: [0, 1],
+                outputRange: [20, 0],
+              }),
+            },
+          ],
+        }}
+      >
+        <DailyDishes
+          dailyDishes={dailyDishes}
+          additionalDishes={additionalDishes}
+          showMoreDishes={showMoreDishes}
+          setShowMoreDishes={setShowMoreDishes}
+        />
+      </Animated.View>
+    </Animated.ScrollView>
   );
 }
 
@@ -296,170 +269,5 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f5f5f7",
-  },
-  header: {
-    paddingTop: 50,
-    paddingHorizontal: 16,
-    paddingBottom: 20,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
-    position: "relative",
-  },
-  addressLabel: {
-    color: "rgba(255,255,255,0.7)",
-    fontSize: 12,
-    marginBottom: 4,
-  },
-  addressContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  addressText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 14,
-  },
-  headerIcons: {
-    position: "absolute",
-    right: 16,
-    top: 50,
-    flexDirection: "row",
-  },
-  searchBox: {
-    flexDirection: "row",
-    backgroundColor: "#fff",
-    borderRadius: 20,
-    paddingHorizontal: 16,
-    alignItems: "center",
-    height: 40,
-    marginTop: 16,
-  },
-  input: {
-    marginLeft: 8,
-    fontSize: 14,
-    flex: 1,
-    color: "#000",
-  },
-  headerBgImage: {
-    position: "absolute",
-    bottom: 0,
-    left: 0,
-    width: "100%",
-    height: 80,
-    opacity: 0.15,
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
-  },
-  mainDealCard: {
-    flexDirection: "row",
-    borderRadius: 20,
-    padding: 15,
-    marginRight: 20,
-    alignItems: "center",
-    width: 320,
-    height: 140,
-    justifyContent: "space-between",
-  },
-  dealTextContainer: {
-    flex: 1,
-    paddingRight: 10,
-  },
-  mainDealTitle: {
-    color: "#fff",
-    fontWeight: "bold",
-    fontSize: 20,
-  },
-  mainDealSubtitle: {
-    color: "#fff",
-    fontSize: 14,
-    marginTop: 8,
-  },
-  promoImage: {
-    width: 110,
-    height: 110,
-    borderRadius: 60,
-  },
-  walletCoinsContainer: {
-    flexDirection: "row",
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: "#e5e7eb",
-    marginTop: 20,
-  },
-  walletCoinsBox: {
-    flex: 1,
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 16,
-    borderRightWidth: 1,
-    borderColor: "#e5e7eb",
-  },
-  walletCoinsTitle: {
-    fontWeight: "600",
-    fontSize: 14,
-    color: "#111827",
-  },
-  walletCoinsValue: {
-    fontSize: 14,
-    color: "#6b7280",
-  },
-  quickMenu: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 20,
-    marginHorizontal: 16,
-  },
-  quickMenuItem: {
-    alignItems: "center",
-    width: 70,
-  },
-  quickMenuText: {
-    marginTop: 8,
-    fontSize: 12,
-    fontWeight: "600",
-    color: "#374151",
-    textAlign: "center",
-  },
-  dailyHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-    marginTop: 24,
-    marginBottom: 12,
-    alignItems: "center",
-  },
-  dailyTitle: {
-    fontWeight: "700",
-    fontSize: 18,
-    color: "#111827",
-  },
-  seeAllText: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#f43f5e",
-  },
-  dailyGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
-    paddingHorizontal: 16,
-  },
-  dishCard: {
-    width: "48%",
-    borderRadius: 14,
-    padding: 12,
-    marginBottom: 16,
-    justifyContent: "center",
-  },
-  dishTitle: {
-    fontWeight: "700",
-    fontSize: 16,
-    color: "#fff",
-    marginBottom: 6,
-  },
-  dishSubtitle: {
-    fontSize: 12,
-    color: "#f3f4f6",
   },
 });

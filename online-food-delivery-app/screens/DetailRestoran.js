@@ -1,82 +1,154 @@
-import React from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, Image, ScrollView, StyleSheet, TouchableOpacity } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 
-const menuItems = [
-    {
-      title: "Nachos Chilli Con Carne",
-      description: "Tortilla chips, cheddar, beans, guacamole, salsa, cilantro and onion.",
-      price: 70000,
-    },
-    {
-      title: "Spaghetti Aglio Olio with Chicken",
-      description: "Garlic, dried chili flakes, parmesan bread crumbs.",
-      price: 39000,
-      originalPrice: 70000,
-    },
-    {
-      title: "Bacon Mac & Cheese",
-      description: "Macaroni tossed in cheese and choice of bacon.",
-      price: 89000,
-    },
-    {
-      title: "Chicken Lollipop",
-      description: "Lollipop shaped chicken served with house made hot sauce.",
-      price: 189000,
-      originalPrice: 220000,
-    },
-    {
-      title: "Salmon with Beurre Blanc",
-      description: "Seared salmon served with butter sauce & seasonal vegetables.",
-      price: 320000,
-    },
-  ];
+const TABS = ['Popular', 'Main Courses', 'Appetizer', 'Pizza & Pasta'];
 
-const DetailRestoran = ({ route }) => {
-  const { restaurant } = route.params;
+const DetailRestoran = () => {
+  const { params } = useRoute();
+  const restaurant = params?.restaurant;
+  const [activeTab, setActiveTab] = useState(TABS[0]);
+
+  if (!restaurant) {
+    return (
+      <View style={styles.centered}>
+        <Text>No se encontró el restaurante.</Text>
+      </View>
+    );
+  }
+
+  const menuSection = restaurant.menu?.[activeTab];
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>{restaurant.name}</Text>
-      <Text>{restaurant.description}</Text>
-      <Text>Rating: {restaurant.rating} ({restaurant.reviews} reviews)</Text>
-      <Text>Distance: {restaurant.distance}</Text>
-      <Text>Delivery: {restaurant.deliveryTime}</Text>
-      <Text>Promo: {restaurant.promo}</Text>
-      <Text>Free Delivery: {restaurant.freeDelivery ? 'Yes' : 'No'}</Text>
+    <ScrollView style={styles.container}>
+      <Image source={restaurant.imageUrl} style={styles.headerImage} />
 
-      <Text style={styles.menuTitle}>Menu</Text>
-      <FlatList
-        data={menuItems}
-        keyExtractor={(item) => item.title}
-        renderItem={({ item }) => (
-          <View style={styles.menuItem}>
-            <Text style={styles.menuItemTitle}>{item.title}</Text>
-            <Text>{item.description}</Text>
-            <Text>Rp{item.price.toLocaleString('id-ID')}</Text>
-            {item.originalPrice && (
-              <Text style={styles.originalPrice}>
-                Rp{item.originalPrice.toLocaleString('id-ID')}
-              </Text>
-            )}
-            <TouchableOpacity style={styles.addButton}>
-              <Text style={styles.addButtonText}>Add</Text>
-            </TouchableOpacity>
+      <View style={styles.infoContainer}>
+        <Text style={styles.title}>{restaurant.name}</Text>
+        <Text style={styles.subtext}>Italian Resto Fairgrounds, SCBD, Jakarta</Text>
+        <Text style={styles.linkText}>See on maps</Text>
+
+        <View style={styles.row}>
+          <Text style={styles.boldText}>4.8</Text>
+          <Text style={styles.separator}> | </Text>
+          <Text style={styles.boldText}>6</Text>
+          <Text style={styles.separator}> | </Text>
+          <Text style={styles.boldText}>48-890rb</Text>
+          <Text style={styles.separator}> | </Text>
+          <Text style={styles.boldText}>8AM-8PM</Text>
+        </View>
+
+        <View style={styles.row}>
+          <Text style={styles.lightText}>99+ reviews</Text>
+          <Text style={styles.separator}> | </Text>
+          <Text style={styles.lightText}>Menu variants</Text>
+          <Text style={styles.separator}> | </Text>
+          <Text style={styles.lightText}>Price range</Text>
+          <Text style={styles.separator}> | </Text>
+          <Text style={styles.lightText}>Opening hours</Text>
+        </View>
+
+        <View style={[styles.row, { marginTop: 10 }]}>
+          <Text style={styles.boldText}>{restaurant.distance}km distance</Text>
+          <Text style={[styles.linkText, { marginLeft: 'auto' }]}>Change location</Text>
+        </View>
+        <Text style={styles.deliveryText}>
+          Est. delivery fee 12rb · delivery in {restaurant.deliveryTime}
+        </Text>
+
+        <View style={styles.discountBox}>
+          <Text style={styles.discountTitle}>Discount for you</Text>
+          <View style={styles.discountItem}>
+            <Text style={styles.discountText}>🎁 F&B discount 75%</Text>
           </View>
-        )}
-      />
-    </View>
+          <View style={styles.discountItem}>
+            <Text style={styles.discountText}>🚚 Shipping Discount 50%</Text>
+          </View>
+          <Text style={styles.discountNote}>Discount for all menus. Applicable for all merchants.</Text>
+        </View>
+      </View>
+
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.tabContainer}>
+        {TABS.map(tab => (
+          <TouchableOpacity key={tab} onPress={() => setActiveTab(tab)}>
+            <Text style={[styles.tab, activeTab === tab && styles.activeTab]}>{tab}</Text>
+          </TouchableOpacity>
+        ))}
+      </ScrollView>
+
+      <View style={styles.menuSection}>
+        <Text style={styles.sectionTitle}>{activeTab}</Text>
+        {menuSection?.map((item, index) => (
+          <View key={index} style={styles.menuItem}>
+            <Image source={item.image} style={styles.menuImage} />
+            <View style={{ marginLeft: 10 }}>
+              <Text style={styles.itemName}>{item.title}</Text>
+              <Text style={styles.itemPrice}>${item.price}</Text>
+              {item.originalPrice && (
+                <Text style={styles.originalPrice}>${item.originalPrice}</Text>
+              )}
+              <Text style={styles.itemDescription}>{item.description}</Text>
+            </View>
+          </View>
+        ))}
+      </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: '#fff' },
-  title: { fontSize: 24, fontWeight: 'bold', marginBottom: 8 },
-  menuTitle: { fontSize: 20, fontWeight: 'bold', marginTop: 16 },
-  menuItem: { marginBottom: 16, backgroundColor: '#f9f9f9', padding: 12, borderRadius: 8 },
-  menuItemTitle: { fontSize: 16, fontWeight: 'bold' },
-  originalPrice: { textDecorationLine: 'line-through', color: 'grey' },
-  addButton: { backgroundColor: '#FFCCCC', padding: 8, borderRadius: 8, marginTop: 4, alignItems: 'center' },
-  addButtonText: { color: '#000' },
+  container: { flex: 1, backgroundColor: '#fff' },
+  centered: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  headerImage: { width: '100%', height: 220 },
+  infoContainer: { padding: 16 },
+  title: { fontSize: 22, fontWeight: 'bold', marginBottom: 4 },
+  subtext: { fontSize: 15, color: '#555' },
+  linkText: { fontSize: 14, color: '#007bff', marginTop: 4 },
+  row: { flexDirection: 'row', flexWrap: 'wrap', marginTop: 8, alignItems: 'center' },
+  boldText: { fontWeight: 'bold', fontSize: 14 },
+  lightText: { fontSize: 13, color: '#666' },
+  separator: { marginHorizontal: 6, color: '#aaa' },
+  deliveryText: { fontSize: 14, marginTop: 6, color: '#444' },
+  discountBox: {
+    marginTop: 16,
+    backgroundColor: '#f8f8f8',
+    padding: 12,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: '#eee',
+  },
+  discountTitle: { fontSize: 16, fontWeight: 'bold', marginBottom: 6 },
+  discountItem: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#ccc',
+    padding: 8,
+    borderRadius: 8,
+    marginVertical: 4,
+  },
+  discountText: { fontSize: 14 },
+  discountNote: { fontSize: 12, color: '#666', marginTop: 8 },
+  tabContainer: { flexDirection: 'row', paddingHorizontal: 16, marginVertical: 12 },
+  tab: {
+    marginRight: 12,
+    paddingVertical: 6,
+    paddingHorizontal: 14,
+    borderRadius: 16,
+    backgroundColor: '#eee',
+    fontSize: 14,
+  },
+  activeTab: {
+    backgroundColor: '#007bff',
+    color: '#fff',
+  },
+  menuSection: { paddingHorizontal: 16, marginBottom: 24 },
+  sectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 8 },
+  menuItem: { flexDirection: 'row', alignItems: 'center', marginBottom: 12 },
+  menuImage: { width: 60, height: 60, borderRadius: 8 },
+  itemName: { fontSize: 16 },
+  itemPrice: { fontSize: 14, color: 'gray' },
+  originalPrice: { fontSize: 12, color: 'red', textDecorationLine: 'line-through' },
+  itemDescription: { fontSize: 12, color: '#555' },
 });
 
 export default DetailRestoran;

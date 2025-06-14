@@ -1,37 +1,45 @@
-import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { quickMenuItems } from "../screens/data/constants";
+// QuickMenu.js
+import React from 'react';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 
-export default function QuickMenu() {
+const QuickMenu = ({ quickMenuItems }) => {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.quickMenu}>
-      {quickMenuItems.map(({ label, icon }) => (
-        <View key={label} style={styles.quickMenuItem}>
+      {quickMenuItems.map(({ label, icon, route }) => (
+        <TouchableOpacity
+          key={label}
+          style={styles.quickMenuItem}
+          onPress={() => navigation.navigate(route)}
+        >
           {icon}
           <Text style={styles.quickMenuText}>{label}</Text>
-        </View>
+        </TouchableOpacity>
       ))}
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   quickMenu: {
     flexDirection: "row",
-    flexWrap: "wrap",
     justifyContent: "space-around",
-    paddingHorizontal: 16,
     marginTop: 20,
+    marginHorizontal: 16,
   },
   quickMenuItem: {
     alignItems: "center",
-    marginBottom: 20,
-    width: 80,
+    width: 70,
   },
   quickMenuText: {
     marginTop: 8,
     fontSize: 12,
+    fontWeight: "600",
+    color: "#374151",
     textAlign: "center",
-    color: "#333",
   },
 });
+
+export default QuickMenu;
