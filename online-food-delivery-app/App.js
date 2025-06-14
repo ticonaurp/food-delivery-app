@@ -19,8 +19,8 @@ import { FontAwesome } from '@expo/vector-icons';
 </TouchableOpacity>
 
 // Configuración de Auth0
-const domain = "dev-mv6m567ackmmeew0y.us.auth0.com";
-const clientId = "sPDodCe10qkysn6W1i1wn5nJMFeyrwYC";
+const domain = "dev-mv6m567ackmmew0y.us.auth0.com";
+const clientId = "6g0V8OW4rttF2TEdrTyFI7vYlcZNaKIs";
 
 const Stack = createStackNavigator();
 
