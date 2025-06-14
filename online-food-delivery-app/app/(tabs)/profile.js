@@ -1,35 +1,113 @@
-import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
+import React, { useState } from 'react';
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, TextInput } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { FontAwesome } from '@expo/vector-icons'; // Usamos FontAwesome para los iconos
+import { launchImageLibrary } from 'react-native-image-picker'; // Importamos la librería para seleccionar imágenes
 
 function ProfileScreen() {
   const navigation = useNavigation();
+
+  // Estado para manejar la edición de campos
+  const [editingName, setEditingName] = useState(false);
+  const [editingPhone, setEditingPhone] = useState(false);
+  const [editingAddress, setEditingAddress] = useState(false);
+
+  // Estado para almacenar los nuevos valores
+  const [name, setName] = useState("Geraldin Nuñez");
+  const [phone, setPhone] = useState("947169852");
+  const [address, setAddress] = useState("2113 , Lima");
+  const [imageUri, setImageUri] = useState(null); // Estado para almacenar la imagen seleccionada
+
+  // Función para manejar la edición de la imagen
+  const handleImagePicker = () => {
+    // Usamos `launchImageLibrary` para abrir el selector de imágenes
+    launchImageLibrary(
+      { mediaType: 'photo', quality: 0.5 },
+      (response) => {
+        if (response.didCancel) {
+          console.log('Imagen seleccionada cancelada');
+        } else if (response.errorCode) {
+          console.log('Error al seleccionar la imagen: ', response.errorMessage);
+        } else {
+          setImageUri(response.assets[0].uri); // Guardamos la URI de la imagen seleccionada
+        }
+      }
+    );
+  };
+
+  // Función para guardar los cambios
+  const handleSave = () => {
+    setEditingName(false);
+    setEditingPhone(false);
+    setEditingAddress(false);
+    // Aquí puedes agregar lógica para guardar los cambios (en un backend o en un estado global)
+  };
 
   return (
     <ScrollView style={styles.container}>
       {/* Header con la foto del usuario */}
       <View style={styles.header}>
         <Image 
-          source={{uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIEY21qcAFAMli4-I8OVcd9C-BmszpY1MqnA&s'}} 
+          source={imageUri ? { uri: imageUri } : { uri: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSIEY21qcAFAMli4-I8OVcd9C-BmszpY1MqnA&s'}} // Si hay una imagen seleccionada, la mostramos, sino mostramos la imagen por defecto
           style={styles.userImage}
         />
-        <Text style={styles.headerText}>Geraldin Nuñez</Text>
+        <Text style={styles.headerText}>{name}</Text>
+        {/* Botón para seleccionar la imagen */}
+        <TouchableOpacity style={styles.imageButton} onPress={handleImagePicker}>
+          <Text style={styles.buttonText}>Subir Imagen</Text>
+        </TouchableOpacity>
       </View>
 
       {/* Información de perfil */}
       <View style={styles.profileInfo}>
-        <Text style={styles.title}>Telefono: 947169852</Text>
-        <Text style={styles.title}>Dirección: 2113 , Lima</Text>
-      </View>
+        <View style={styles.editableField}>
+          <Text style={styles.title}>Nombre:</Text>
+          {editingName ? (
+            <TextInput
+              style={styles.input}
+              value={name}
+              onChangeText={setName}
+            />
+          ) : (
+            <Text style={styles.fieldValue}>{name}</Text>
+          )}
+          <TouchableOpacity onPress={() => setEditingName(!editingName)}>
+            <FontAwesome name="edit" size={20} color="#ff6347" />
+          </TouchableOpacity>
+        </View>
 
-      {/* Iconos de características */}
-      <View style={styles.iconContainer}>
-        <FontAwesome name="map-marker" size={30} color="#ff6347" style={styles.icon} />
-        <FontAwesome name="star" size={30} color="#ff6347" style={styles.icon} />
-        <FontAwesome name="percentage" size={30} color="#ff6347" style={styles.icon} />
-        <FontAwesome name="refresh" size={30} color="#ff6347" style={styles.icon} />
-        <FontAwesome name="truck" size={30} color="#ff6347" style={styles.icon} />
+        <View style={styles.editableField}>
+          <Text style={styles.title}>Teléfono:</Text>
+          {editingPhone ? (
+            <TextInput
+              style={styles.input}
+              value={phone}
+              onChangeText={setPhone}
+              keyboardType="phone-pad"
+            />
+          ) : (
+            <Text style={styles.fieldValue}>{phone}</Text>
+          )}
+          <TouchableOpacity onPress={() => setEditingPhone(!editingPhone)}>
+            <FontAwesome name="edit" size={20} color="#ff6347" />
+          </TouchableOpacity>
+        </View>
+
+        <View style={styles.editableField}>
+          <Text style={styles.title}>Dirección:</Text>
+          {editingAddress ? (
+            <TextInput
+              style={styles.input}
+              value={address}
+              onChangeText={setAddress}
+            />
+          ) : (
+            <Text style={styles.fieldValue}>{address}</Text>
+          )}
+          <TouchableOpacity onPress={() => setEditingAddress(!editingAddress)}>
+            <FontAwesome name="edit" size={20} color="#ff6347" />
+          </TouchableOpacity>
+        </View>
       </View>
 
       {/* Acciones del Usuario */}
@@ -58,15 +136,12 @@ function ProfileScreen() {
         </TouchableOpacity>
       </View>
 
-      {/* Agregar más vistas (por ejemplo, historial de compras o preferencias) */}
-      <View style={styles.extraViews}>
-        <TouchableOpacity style={styles.extraButton} onPress={() => navigation.navigate('PurchaseHistory')}>
-          <Text style={styles.extraButtonText}>Historial de Compras</Text>
+      {/* Botón para guardar cambios */}
+      {(editingName || editingPhone || editingAddress) && (
+        <TouchableOpacity style={styles.saveButton} onPress={handleSave}>
+          <Text style={styles.buttonText}>Guardar Cambios</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.extraButton} onPress={() => navigation.navigate('Preferences')}>
-          <Text style={styles.extraButtonText}>Preferencias</Text>
-        </TouchableOpacity>
-      </View>
+      )}
     </ScrollView>
   );
 }
@@ -94,6 +169,16 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#fff',
   },
+  imageButton: {
+    marginTop: 10,
+    backgroundColor: '#4CAF50',
+    padding: 10,
+    borderRadius: 5,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 18,
+  },
   profileInfo: {
     padding: 20,
     backgroundColor: '#f5f5f5',
@@ -103,10 +188,25 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#ddd',
   },
+  editableField: {
+    marginBottom: 20,
+  },
   title: {
     fontSize: 18,
     marginBottom: 10,
     color: '#333',
+  },
+  fieldValue: {
+    fontSize: 18,
+    color: '#555',
+  },
+  input: {
+    height: 40,
+    borderColor: '#ddd',
+    borderWidth: 1,
+    borderRadius: 5,
+    paddingLeft: 10,
+    fontSize: 16,
   },
   iconContainer: {
     flexDirection: 'row',
@@ -137,19 +237,15 @@ const styles = StyleSheet.create({
     padding: 20,
     alignItems: 'center',
   },
-  extraViews: {
-    padding: 20,
-  },
-  extraButton: {
-    backgroundColor: '#f0ad4e',
+  saveButton: {
+    backgroundColor: '#4CAF50',
     padding: 15,
     marginBottom: 10,
     borderRadius: 8,
     alignItems: 'center',
-  },
-  extraButtonText: {
-    color: '#fff',
-    fontSize: 18,
+    borderWidth: 1,
+    borderColor: '#fff',
+    marginHorizontal: 20,
   },
 });
 
