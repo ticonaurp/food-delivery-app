@@ -5,7 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 
-const Header = ({ currentAddress }) => {
+const Header = ({ currentAddress, onBellPress }) => {
   return (
     <LinearGradient
       colors={["#ff5f6d", "#ffc371"]}
@@ -25,14 +25,18 @@ const Header = ({ currentAddress }) => {
           />
         </TouchableOpacity>
       </View>
+
       <View style={styles.headerIcons}>
         <TouchableOpacity>
           <FontAwesome5 name="heart" size={22} color="white" />
         </TouchableOpacity>
-        <TouchableOpacity style={{ marginLeft: 16 }}>
+
+        {/* Campana con evento onBellPress */}
+        <TouchableOpacity style={{ marginLeft: 16 }} onPress={onBellPress}>
           <Ionicons name="notifications-outline" size={22} color="white" />
         </TouchableOpacity>
       </View>
+
       <View style={styles.searchBox}>
         <Ionicons name="search-outline" size={20} color="#aaa" />
         <TextInput
@@ -41,10 +45,10 @@ const Header = ({ currentAddress }) => {
           style={styles.input}
         />
       </View>
+
       <Image
         source={{
-          uri:
-            "https://storage.googleapis.com/a1aa/image/adc687b5-006d-4ba1-6105-1c8ba29ccb4b.jpg",
+          uri: "https://storage.googleapis.com/a1aa/image/adc687b5-006d-4ba1-6105-1c8ba29ccb4b.jpg",
         }}
         style={styles.headerBgImage}
         resizeMode="cover"

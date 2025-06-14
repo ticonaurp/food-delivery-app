@@ -1,4 +1,3 @@
-// src/screens/HomeScreen.js
 import React, { useState, useEffect, useRef } from "react";
 import * as Location from "expo-location";
 import {
@@ -6,6 +5,9 @@ import {
   StyleSheet,
   Animated,
   View,
+  Text,
+  TouchableOpacity,
+  Dimensions,
 } from "react-native";
 
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
@@ -26,38 +28,37 @@ const weeklyDeals = [
     title: "Today's Best Deals",
     image: require("../assets/pizza1.png"),
     description: "Off up to 75%",
-    gradientColors: ["#FF7A00", "#FF9A00"], // naranja degradado
+    gradientColors: ["#FF7A00", "#FF9A00"],
   },
   {
     id: "2",
     title: "Weekly Best Deals",
     image: require("../assets/burger.png"),
     description: "Off up to 50%",
-    gradientColors: ["#FF4081", "#ff0000"], // rosa a rojo
+    gradientColors: ["#FF4081", "#ff0000"],
   },
   {
     id: "3",
     title: "Top Picks This Week",
     image: require("../assets/sushi.png"),
     description: "Up to 30% off",
-    gradientColors: ["#4facfe", "#00f2fe"], // azul claro degradado
+    gradientColors: ["#4facfe", "#00f2fe"],
   },
   {
     id: "4",
     title: "Hot Trending Meals",
     image: require("../assets/tacos.png"),
     description: "Exclusive deals",
-    gradientColors: ["#43e97b", "#38f9d7"], // verde menta degradado
+    gradientColors: ["#43e97b", "#38f9d7"],
   },
   {
     id: "5",
     title: "Only for You",
     image: require("../assets/noodles.png"),
     description: "Surprise discount",
-    gradientColors: ["#ff9a9e", "#fad0c4"], // rosado pastel
+    gradientColors: ["#ff9a9e", "#fad0c4"],
   },
 ];
-
 
 const quickMenuItems = [
   {
@@ -88,45 +89,23 @@ const quickMenuItems = [
 ];
 
 const dailyDishes = [
-  {
-    title: "Customer Top Picks",
-    count: "321",
-    color: "#f59e0b",
-  },
-  {
-    title: "Beverages",
-    count: "189",
-    color: "#f94a7a",
-  },
-  {
-    title: "Fast Food",
-    count: "526",
-    color: "#3b5afe",
-  },
-  {
-    title: "Desserts",
-    count: "891",
-    color: "#3db2f5",
-  },
+  { title: "Customer Top Picks", count: "321", color: "#f59e0b" },
+  { title: "Beverages", count: "189", color: "#f94a7a" },
+  { title: "Fast Food", count: "526", color: "#3b5afe" },
+  { title: "Desserts", count: "891", color: "#3db2f5" },
 ];
 
 const additionalDishes = [
-  {
-    title: "Pizza",
-    count: "150",
-    color: "#3b5afe",
-  },
-  {
-    title: "Salads",
-    count: "230",
-    color: "#f59e0b",
-  },
+  { title: "Pizza", count: "150", color: "#3b5afe" },
+  { title: "Salads", count: "230", color: "#f59e0b" },
 ];
 
 export default function HomeScreen() {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [currentAddress, setCurrentAddress] = useState("Fetching location...");
   const [showMoreDishes, setShowMoreDishes] = useState(false);
+  const [sidebarVisible, setSidebarVisible] = useState(false);
+  const sidebarAnim = useRef(new Animated.Value(Dimensions.get("window").width)).current;
   const scrollY = useRef(new Animated.Value(0)).current;
 
   const fadeInWallet = useRef(new Animated.Value(0)).current;
@@ -150,7 +129,6 @@ export default function HomeScreen() {
     };
     fetchLocation();
 
-    // Sequential animation
     Animated.sequence([
       Animated.timing(fadeInWallet, {
         toValue: 1,
@@ -170,98 +148,81 @@ export default function HomeScreen() {
     ]).start();
   }, []);
 
+  const toggleSidebar = () => {
+    setSidebarVisible(!sidebarVisible);
+    Animated.timing(sidebarAnim, {
+      toValue: sidebarVisible ? Dimensions.get("window").width : 0,
+      duration: 300,
+      useNativeDriver: false,
+    }).start();
+  };
+
   return (
-    <Animated.ScrollView
-      style={styles.container}
-      showsVerticalScrollIndicator={false}
-      scrollEventThrottle={16}
-      onScroll={Animated.event(
-        [{ nativeEvent: { contentOffset: { y: scrollY } } }],
-        { useNativeDriver: true }
-      )}
-    >
-      <Animated.View
-        style={{
-          opacity: scrollY.interpolate({
-            inputRange: [0, 150],
-            outputRange: [1, 0],
-            extrapolate: "clamp",
-          }),
-          transform: [
-            {
-              translateY: scrollY.interpolate({
-                inputRange: [0, 150],
-                outputRange: [0, -50],
-                extrapolate: "clamp",
-              }),
-            },
-          ],
-        }}
+    <View style={{ flex: 1 }}>
+      <Animated.ScrollView
+        style={styles.container}
+        showsVerticalScrollIndicator={false}
+        scrollEventThrottle={16}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true }
+        )}
       >
-        <Header currentAddress={currentAddress} />
-        <WeeklyDealsCarousel
-          weeklyDeals={weeklyDeals}
-          currentIndex={currentIndex}
-          setCurrentIndex={setCurrentIndex}
-        />
-      </Animated.View>
+        <Animated.View
+          style={{
+            opacity: scrollY.interpolate({
+              inputRange: [0, 150],
+              outputRange: [1, 0],
+              extrapolate: "clamp",
+            }),
+            transform: [
+              {
+                translateY: scrollY.interpolate({
+                  inputRange: [0, 150],
+                  outputRange: [0, -50],
+                  extrapolate: "clamp",
+                }),
+              },
+            ],
+          }}
+        >
+          <Header currentAddress={currentAddress} onBellPress={toggleSidebar} />
+          <WeeklyDealsCarousel
+            weeklyDeals={weeklyDeals}
+            currentIndex={currentIndex}
+            setCurrentIndex={setCurrentIndex}
+          />
+        </Animated.View>
 
-      {/* Animated WalletCoins */}
-      <Animated.View
-        style={{
-          opacity: fadeInWallet,
-          transform: [
-            {
-              translateY: fadeInWallet.interpolate({
-                inputRange: [0, 1],
-                outputRange: [20, 0],
-              }),
-            },
-          ],
-        }}
-      >
-        <WalletCoins />
-      </Animated.View>
+        <Animated.View style={{ opacity: fadeInWallet, transform: [{ translateY: fadeInWallet.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }] }}>
+          <WalletCoins />
+        </Animated.View>
 
-      {/* Animated QuickMenu */}
-      <Animated.View
-        style={{
-          opacity: fadeInMenu,
-          transform: [
-            {
-              translateY: fadeInMenu.interpolate({
-                inputRange: [0, 1],
-                outputRange: [20, 0],
-              }),
-            },
-          ],
-        }}
-      >
-        <QuickMenu quickMenuItems={quickMenuItems} />
-      </Animated.View>
+        <Animated.View style={{ opacity: fadeInMenu, transform: [{ translateY: fadeInMenu.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }] }}>
+          <QuickMenu quickMenuItems={quickMenuItems} />
+        </Animated.View>
 
-      {/* Animated DailyDishes */}
-      <Animated.View
-        style={{
-          opacity: fadeInDishes,
-          transform: [
-            {
-              translateY: fadeInDishes.interpolate({
-                inputRange: [0, 1],
-                outputRange: [20, 0],
-              }),
-            },
-          ],
-        }}
-      >
-        <DailyDishes
-          dailyDishes={dailyDishes}
-          additionalDishes={additionalDishes}
-          showMoreDishes={showMoreDishes}
-          setShowMoreDishes={setShowMoreDishes}
-        />
+        <Animated.View style={{ opacity: fadeInDishes, transform: [{ translateY: fadeInDishes.interpolate({ inputRange: [0, 1], outputRange: [20, 0] }) }] }}>
+          <DailyDishes
+            dailyDishes={dailyDishes}
+            additionalDishes={additionalDishes}
+            showMoreDishes={showMoreDishes}
+            setShowMoreDishes={setShowMoreDishes}
+          />
+        </Animated.View>
+      </Animated.ScrollView>
+
+      {/* Notificación sidebar */}
+      <Animated.View style={[styles.sidebar, { right: sidebarAnim }]}>
+        <Text style={styles.sidebarTitle}>Notifications</Text>
+        <Text style={styles.notification}>🔥 Promo: 2x1 en pizzas este viernes</Text>
+        <Text style={styles.notification}>🚀 Nuevo restaurante cerca de ti</Text>
+        <Text style={styles.notification}>🎉 ¡Ganaste 50 coins en tu última orden!</Text>
+        <TouchableOpacity onPress={toggleSidebar} style={styles.closeBtn}>
+          <Text style={{ color: "#f43f5e", fontWeight: "bold" }}>Cerrar</Text>
+        </TouchableOpacity>
       </Animated.View>
-    </Animated.ScrollView>
+    </View>
   );
 }
 
@@ -269,5 +230,28 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f5f5f7",
+  },
+  sidebar: {
+    position: "absolute",
+    top: 0,
+    bottom: 0,
+    width: 280,
+    backgroundColor: "#fff",
+    padding: 16,
+    elevation: 8,
+    zIndex: 10,
+  },
+  sidebarTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    marginBottom: 16,
+  },
+  notification: {
+    fontSize: 16,
+    marginBottom: 12,
+  },
+  closeBtn: {
+    marginTop: 20,
+    alignSelf: "flex-end",
   },
 });
