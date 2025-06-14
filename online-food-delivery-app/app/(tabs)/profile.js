@@ -57,6 +57,16 @@ function ProfileScreen() {
           <Text style={styles.buttonText}>Ajustes</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Agregar más vistas (por ejemplo, historial de compras o preferencias) */}
+      <View style={styles.extraViews}>
+        <TouchableOpacity style={styles.extraButton} onPress={() => navigation.navigate('PurchaseHistory')}>
+          <Text style={styles.extraButtonText}>Historial de Compras</Text>
+        </TouchableOpacity>
+        <TouchableOpacity style={styles.extraButton} onPress={() => navigation.navigate('Preferences')}>
+          <Text style={styles.extraButtonText}>Preferencias</Text>
+        </TouchableOpacity>
+      </View>
     </ScrollView>
   );
 }
@@ -126,6 +136,20 @@ const styles = StyleSheet.create({
   settings: {
     padding: 20,
     alignItems: 'center',
+  },
+  extraViews: {
+    padding: 20,
+  },
+  extraButton: {
+    backgroundColor: '#f0ad4e',
+    padding: 15,
+    marginBottom: 10,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  extraButtonText: {
+    color: '#fff',
+    fontSize: 18,
   },
 });
 
