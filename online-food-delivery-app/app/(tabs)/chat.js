@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, FlatList, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+import { View, Text, TextInput, FlatList, TouchableOpacity, Alert, StyleSheet, Image } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+import { launchImageLibrary } from 'react-native-image-picker'; // Importamos para seleccionar imágenes
 
 // Lista de ejemplo para amigos, deliveries y restaurantes
 const friends = ['Juan', 'Maria', 'Pedro', 'Ana'];
@@ -12,6 +13,7 @@ export default function ChatScreen() {
   const [newMessage, setNewMessage] = useState('');
   const [activeChat, setActiveChat] = useState('delivery');  // 'delivery', 'friends', 'restaurant'
   const [showAddScreen, setShowAddScreen] = useState(null); // State to control which sub-screen to show
+  const [activeName, setActiveName] = useState(''); // Store the name of the active chat (friend, delivery, restaurant)
 
   useEffect(() => {
     if (activeChat === 'delivery') {
@@ -42,8 +44,28 @@ export default function ChatScreen() {
     }
   };
 
+  const handleImagePicker = () => {
+    launchImageLibrary(
+      { mediaType: 'photo', quality: 0.5 },
+      (response) => {
+        if (response.didCancel) {
+          console.log('Imagen seleccionada cancelada');
+        } else if (response.errorCode) {
+          console.log('Error al seleccionar la imagen: ', response.errorMessage);
+        } else {
+          const imageUri = response.assets[0].uri;
+          setMessages([
+            ...messages,
+            { id: `${messages.length + 1}`, sender: 'Me', text: imageUri, timestamp: new Date().toLocaleTimeString() },
+          ]);
+        }
+      }
+    );
+  };
+
   const handleAddFriend = (name) => {
     if (activeChat === 'friends') {
+      setActiveName(`Amigo: ${name}`); // Update active name
       setMessages([
         ...messages,
         { id: `${messages.length + 1}`, sender: 'Me', text: `Amigo añadido: ${name}`, timestamp: new Date().toLocaleTimeString() },
@@ -57,6 +79,7 @@ export default function ChatScreen() {
 
   const handleAddDelivery = (name) => {
     if (activeChat === 'delivery') {
+      setActiveName(`Delivery: ${name}`); // Update active name
       setMessages([
         ...messages,
         { id: `${messages.length + 1}`, sender: 'Me', text: `Delivery añadido: ${name}`, timestamp: new Date().toLocaleTimeString() },
@@ -70,6 +93,7 @@ export default function ChatScreen() {
 
   const handleAddRestaurant = (name) => {
     if (activeChat === 'restaurant') {
+      setActiveName(`Restaurante: ${name}`); // Update active name
       setMessages([
         ...messages,
         { id: `${messages.length + 1}`, sender: 'Me', text: `Restaurante añadido: ${name}`, timestamp: new Date().toLocaleTimeString() },
@@ -134,15 +158,20 @@ export default function ChatScreen() {
     <View style={styles.container}>
       <View style={styles.header}>
         <FontAwesome name="tag" size={24} color="#FF6F61" /> {/* Ícono de promociones */}
-        <Text style={styles.headerText}>Chat</Text>
+        <Text style={styles.headerText}>{activeName || 'Chat'}</Text> {/* Display active name */}
       </View>
       <View style={styles.chatList}>
         <FlatList
           data={messages}
           renderItem={({ item }) => (
-            <View style={styles.message}>
+            <View style={[styles.message, item.sender === 'Me' ? styles.myMessage : styles.otherMessage]}>
               <Text style={styles.sender}>{item.sender}:</Text>
-              <Text>{item.text}</Text>
+              {/* Si el mensaje es una imagen, se renderiza con <Image /> */}
+              {item.text && !item.text.includes('http') ? (
+                <Text style={styles.messageText}>{item.text}</Text>
+              ) : (
+                <Image source={{ uri: item.text }} style={styles.imageMessage} />
+              )}
               <Text style={styles.timestamp}>{item.timestamp}</Text>
             </View>
           )}
@@ -162,13 +191,13 @@ export default function ChatScreen() {
       </View>
       <View style={styles.chatSelector}>
         <TouchableOpacity onPress={() => setActiveChat('delivery')}>
-          <FontAwesome name="truck" size={24} color={activeChat === 'delivery' ? '#007BFF' : '#555'} />
+          <FontAwesome name="truck" size={24} color={activeChat === 'delivery' ? '#FF6347' : '#555'} />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setActiveChat('friends')}>
-          <FontAwesome name="users" size={24} color={activeChat === 'friends' ? '#007BFF' : '#555'} />
+          <FontAwesome name="users" size={24} color={activeChat === 'friends' ? '#FF6347' : '#555'} />
         </TouchableOpacity>
         <TouchableOpacity onPress={() => setActiveChat('restaurant')}>
-          <FontAwesome name="cutlery" size={24} color={activeChat === 'restaurant' ? '#007BFF' : '#555'} />
+          <FontAwesome name="cutlery" size={24} color={activeChat === 'restaurant' ? '#FF6347' : '#555'} />
         </TouchableOpacity>
       </View>
       <View style={styles.addSection}>
@@ -183,6 +212,11 @@ export default function ChatScreen() {
         <TouchableOpacity style={styles.addButton} onPress={() => setShowAddScreen('restaurant')}>
           <FontAwesome name="cutlery" size={24} color="#fff" />
           <Text style={styles.addText}>Añadir Restaurante</Text>
+        </TouchableOpacity>
+        {/* Botón para subir la imagen */}
+        <TouchableOpacity style={styles.addButton} onPress={handleImagePicker}>
+          <FontAwesome name="camera" size={24} color="#fff" />
+          <Text style={styles.addText}>Añadir Imagen</Text>
         </TouchableOpacity>
       </View>
       {renderAddScreen()}
@@ -213,9 +247,26 @@ const styles = StyleSheet.create({
   },
   message: {
     marginBottom: 10,
+    padding: 10,
+    borderRadius: 8,
+  },
+  myMessage: {
+    backgroundColor: '#FF6347', // Color cálido para mis mensajes
+    alignSelf: 'flex-end',
+    maxWidth: '75%',
+  },
+  otherMessage: {
+    backgroundColor: '#f0f0f0', // Color neutro para otros mensajes
+    alignSelf: 'flex-start',
+    maxWidth: '75%',
   },
   sender: {
     fontWeight: 'bold',
+    marginBottom: 5,
+  },
+  messageText: {
+    fontSize: 16,
+    color: '#333',
   },
   timestamp: {
     fontSize: 10,
@@ -231,6 +282,7 @@ const styles = StyleSheet.create({
     borderColor: '#ccc',
     padding: 10,
     borderRadius: 20,
+    fontSize: 16,
   },
   sendButton: {
     backgroundColor: '#FF6F61',
@@ -250,7 +302,7 @@ const styles = StyleSheet.create({
   addButton: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FF6F61',
+    backgroundColor: '#FF6347',
     padding: 10,
     marginVertical: 5,
     borderRadius: 10,
@@ -275,5 +327,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#f8f8f8',
     marginVertical: 5,
     borderRadius: 5,
+  },
+  imageMessage: {
+    width: 150,
+    height: 150,
+    borderRadius: 10,
+    marginTop: 10,
   },
 });
