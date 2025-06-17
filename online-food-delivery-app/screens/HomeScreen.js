@@ -24,35 +24,35 @@ const weeklyDeals = [
   {
     id: "1",
     title: "Today's Best Deals",
-    image: require("../assets/pizza1.png"),
+    image:  { uri: "https://i.pinimg.com/736x/47/01/a5/4701a5bca5a98a06770921c031f974b8.jpg" },
     description: "Off up to 75%",
     gradientColors: ["#FF7A00", "#FF9A00"], // naranja degradado
   },
   {
     id: "2",
     title: "Weekly Best Deals",
-    image: require("../assets/burger.png"),
+    image: {uri:"https://t4.ftcdn.net/jpg/13/74/45/89/360_F_1374458987_GeVuTEU2VLC7hzv2yfIt1AFwzHps1zLW.jpg"},
     description: "Off up to 50%",
     gradientColors: ["#FF4081", "#ff0000"], // rosa a rojo
   },
   {
     id: "3",
     title: "Top Picks This Week",
-    image: require("../assets/sushi.png"),
+    image: {uri:"https://myrecipeify.com/wp-content/uploads/2024/10/Chicken-Tempura-Role-8.webp"},
     description: "Up to 30% off",
     gradientColors: ["#4facfe", "#00f2fe"], // azul claro degradado
   },
   {
     id: "4",
     title: "Hot Trending Meals",
-    image: require("../assets/tacos.png"),
+    image: {uri:"https://www.thefoodinmybeard.com/content/taco/whitepeople/wpt10.jpg"},
     description: "Exclusive deals",
     gradientColors: ["#43e97b", "#38f9d7"], // verde menta degradado
   },
   {
     id: "5",
     title: "Only for You",
-    image: require("../assets/noodles.png"),
+    image: {uri:"https://images.immediate.co.uk/production/volatile/sites/30/2020/12/Noodles-with-chilli-oil-eggs-6ec34e9.jpg?quality=90&resize=556,505"},
     description: "Surprise discount",
     gradientColors: ["#ff9a9e", "#fad0c4"], // rosado pastel
   },

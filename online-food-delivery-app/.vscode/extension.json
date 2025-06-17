@@ -1,0 +1,32 @@
+{
+  "recommendations": [
+    "esbenp.prettier-vscode",
+    "dbaeumer.vscode-eslint",
+    "eamodio.gitlens",
+    "VisualStudioExptTeam.vscodeintellicode",
+    "CoenraadS.bracket-pair-colorizer",
+    "christian-kohler.path-intellisense",
+    "PKief.material-icon-theme",
+    "humao.rest-client",
+    "msjsdiag.debugger-for-chrome",
+    "redhat.vscode-yaml",
+    "yzhang.markdown-all-in-one",
+    "xabikos.JavaScriptSnippets",
+    "bradlc.vscode-tailwindcss",
+    "wayou.vscode-todo-highlight",
+    "msjsdiag.vscode-react-native",
+    "dsznajder.es7-react-js-snippets",
+    "planbcoding.vscode-react-refactor",
+    "zetta.react-native-vscode-extensionpack",
+    "kisstkondoros.vscode-codemetrics",
+    "adpyke.codesnap",
+    "naumovs.color-highlight",
+    "bierner.color-info",
+    "anseki.vscode-color",
+    "kamikillerto.vscode-colorize",
+    "waderyan.gitblame",
+    "github.vscode-github-actions",
+    "GitHub.vscode-pull-request-github",
+    "pnp.polacode"
+  ]
+}
