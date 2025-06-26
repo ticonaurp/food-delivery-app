@@ -3,7 +3,8 @@ import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from '../screens/HomeScreen';
 import NearMeScreen from '../screens/NearMeScreen';
-import DetailRestoran from '../screens/DetailRestoran'; // <-- AGREGADO
+import DetailRestoran from '../screens/DetailRestoran';
+import ProductFilterScreen from '../screens/ProductFilterScreen';
 
 const Stack = createStackNavigator();
 
@@ -24,6 +25,11 @@ export default function HomeStack() {
         name="DetailRestoran"
         component={DetailRestoran}
         options={{ title: 'Restaurant Detail' }}
+      />
+      <Stack.Screen
+        name="ProductFilter"
+        component={ProductFilterScreen}
+        options={{ title: 'Explore Products' }}
       />
     </Stack.Navigator>
   );
