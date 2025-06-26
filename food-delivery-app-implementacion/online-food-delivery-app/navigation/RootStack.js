@@ -10,6 +10,7 @@ import AllDayScreen from '../screens/AllDayScreen';
 import QuickDeliveryScreen from '../screens/QuickDeliveryScreen';
 import LoginScreen from '../screens/LoginScreen';
 import CategoryScreen from '../screens/CategoryScreen';
+import ProductListScreen from '../screens/ProductListScreen';
 
 const Stack = createStackNavigator();
 
@@ -57,6 +58,11 @@ const RootStack = () => {
                 options={{ title: 'Quick Delivery' }}
             />
             <Stack.Screen name="CategoryScreen" component={CategoryScreen} />
+            <Stack.Screen
+                name="ProductList"
+                component={ProductListScreen}
+                options={{ title: 'Productos disponibles' }}
+            />
         </Stack.Navigator>
     );
 };
