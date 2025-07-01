@@ -1,18 +1,20 @@
 // QuickMenu.js
-import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React from "react";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { useNavigation } from "@react-navigation/native";
 
 const QuickMenu = ({ quickMenuItems }) => {
   const navigation = useNavigation();
 
   return (
     <View style={styles.quickMenu}>
-      {quickMenuItems.map(({ label, icon, route }) => (
+      {quickMenuItems.map(({ label, icon, route, filterType }) => (
         <TouchableOpacity
           key={label}
           style={styles.quickMenuItem}
-          onPress={() => navigation.navigate(route)}
+          onPress={() =>
+            navigation.navigate(route, filterType ? { filterType } : undefined)
+          }
         >
           {icon}
           <Text style={styles.quickMenuText}>{label}</Text>

@@ -1,85 +1,105 @@
-import React, { useEffect, useState } from "react";
-import { View, Text, Image, Pressable } from "react-native";
-import * as Animatable from "react-native-animatable";
-import * as AuthSession from "expo-auth-session";
-import { authConfig } from "../authConfig";
-
-const redirectUri = AuthSession.makeRedirectUri({ useProxy: true });
-
-const discovery = {
-  authorizationEndpoint: `https://${authConfig.domain}/authorize`,
-  tokenEndpoint: `https://${authConfig.domain}/oauth/token`,
-  userInfoEndpoint: `https://${authConfig.domain}/userinfo`,
-};
+// src/screens/ProfileScreen.js
+import React, { useContext } from 'react';
+import {
+  View,
+  Text,
+  Image,
+  Pressable,
+  StyleSheet,
+  ActivityIndicator
+} from 'react-native';
+import * as Animatable from 'react-native-animatable';
+import { AuthContext } from '../context/AuthContext';
 
 export default function ProfileScreen() {
-  const [userInfo, setUserInfo] = useState(null);
+  const { user, login, logout, loading } = useContext(AuthContext);
 
-  const [request, response, promptAsync] = AuthSession.useAuthRequest(
-    {
-      clientId: authConfig.clientId,
-      redirectUri,
-      responseType: "token",
-      scopes: ["openid", "profile", "email"],
-    },
-    discovery
-  );
-
-  useEffect(() => {
-    const fetchUserInfo = async () => {
-      if (response?.type === "success" && response.params?.access_token) {
-        try {
-          const res = await fetch(discovery.userInfoEndpoint, {
-            headers: {
-              Authorization: `Bearer ${response.params.access_token}`,
-            },
-          });
-          const data = await res.json();
-          console.log("Datos del usuario:", data);
-          setUserInfo(data);
-        } catch (err) {
-          console.error("Error obteniendo perfil:", err);
-        }
-      }
-    };
-
-    fetchUserInfo();
-  }, [response]);
-
-  return (
-    <View style={{ flex: 1, justifyContent: "center", alignItems: "center", padding: 24, backgroundColor: "#fff" }}>
-      {userInfo ? (
-        <Animatable.View animation="fadeInUp" duration={800} style={{ alignItems: "center" }}>
-          {userInfo.picture && (
-            <Image
-              source={{ uri: userInfo.picture }}
-              style={{ width: 100, height: 100, borderRadius: 50, marginBottom: 16 }}
-            />
-          )}
-          <Text style={{ fontSize: 22, fontWeight: "bold", marginBottom: 4 }}>
-            ¡Hola, {userInfo.name}!
-          </Text>
-          <Text style={{ fontSize: 16, color: "#555" }}>{userInfo.email}</Text>
-        </Animatable.View>
-      ) : (
+  // Si no hay usuario, muestro botón de login
+  if (!user) {
+    return (
+      <View style={styles.container}>
         <Animatable.View animation="fadeIn" duration={800}>
           <Pressable
-            onPress={() => promptAsync({ useProxy: true })}
-            disabled={!request}
-            style={{
-              backgroundColor: "#556de8",
-              paddingVertical: 14,
-              paddingHorizontal: 32,
-              borderRadius: 12,
-              elevation: 3,
-            }}
+            onPress={login}
+            disabled={loading}
+            style={styles.loginBtn}
           >
-            <Text style={{ color: "#fff", fontSize: 16, fontWeight: "600" }}>
-              Iniciar sesión con Auth0
-            </Text>
+            {loading
+              ? <ActivityIndicator color="#fff" />
+              : <Text style={styles.loginText}>Iniciar sesión</Text>
+            }
           </Pressable>
         </Animatable.View>
-      )}
+      </View>
+    );
+  }
+
+  // Si hay usuario, muestro perfil y logout
+  return (
+    <View style={styles.container}>
+      <Animatable.View animation="fadeInUp" duration={800} style={styles.profile}>
+        {user.picture && (
+          <Image
+            source={{ uri: user.picture }}
+            style={styles.avatar}
+          />
+        )}
+        <Text style={styles.name}>¡Hola, {user.name}!</Text>
+        <Text style={styles.email}>{user.email}</Text>
+        <Pressable onPress={logout} style={styles.logoutBtn}>
+          <Text style={styles.logoutText}>Cerrar sesión</Text>
+        </Pressable>
+      </Animatable.View>
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1, 
+    justifyContent: 'center', 
+    alignItems: 'center',
+    padding: 24,
+    backgroundColor: '#fff'
+  },
+  profile: {
+    alignItems: 'center'
+  },
+  avatar: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    marginBottom: 16
+  },
+  name: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 4
+  },
+  email: {
+    fontSize: 16,
+    color: '#555',
+    marginBottom: 24
+  },
+  logoutBtn: {
+    backgroundColor: '#E94864',
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 6
+  },
+  logoutText: {
+    color: '#fff',
+    fontWeight: '600'
+  },
+  loginBtn: {
+    backgroundColor: '#556de8',
+    paddingVertical: 14,
+    paddingHorizontal: 32,
+    borderRadius: 12
+  },
+  loginText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600'
+  }
+});

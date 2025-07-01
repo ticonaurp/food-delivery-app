@@ -1,52 +1,142 @@
 export const restaurants = [
   {
-    id: "1",
-    name: "Bottega Ristorante",
-    rating: 4.6,
-    reviews: 1683,
-    price: 49,
-    distance: "4.6",
+    id: "5",
+    name: "Cevichería El Puerto",
+    rating: 4.7,
+    reviews: 1050,
+    price: 30,
+    distance: "3.2",
     deliveryTime: "15 min",
-    description: "Italian restaurant with various dishes",
-    promo: "Extra discount",
+    description: "Deliciosos platos marinos del Perú",
+    promo: "2x1 en ceviches",
     freeDelivery: true,
-    imageUrl:
-      {uri:"https://www.cocinadelirante.com/800x600/filters:format(webp):quality(75)/sites/default/files/images/2023/03/gastronomias-patrimonio-humanidad-italiana.jpg"},
+    imageUrl: {
+      uri: "https://res.cloudinary.com/drdul1vlf/image/upload/v1751065963/ceviche_pjyr9r.jpg",
+    },
     menu: {
       Popular: [
         {
-          name: "Pasta Carbonara",
-          price: 12,
+          name: "Ceviche Mixto",
+          price: 28,
           image: {
-            uri: "https://media.istockphoto.com/id/1087833884/es/foto/bolo%C3%B1esa-de-espaguetis-de-pasta-tradicional-en-plato-blanco-sobre-fondo-de-mesa-de-madera.jpg?s=170667a&w=0&k=20&c=cA1rv-Y8bT6D0MZPH44JerTpAkQMmGK8qJqPH9v3sio=",
-          },
-        },
-        {
-          name: "Margherita Pizza",
-          price: 10,
-          image: {
-            uri: "https://dynamic-media-cdn.tripadvisor.com/media/photo-o/05/68/65/68/apache-balbriggan.jpg?w=800&h=500&s=1",
+            uri: "https://res.cloudinary.com/drdul1vlf/image/upload/v1751066409/CEVICHE-MIXTO_y8hvpz.jpg",
           },
         },
       ],
+      "Main Courses": [],
+      Appetizer: [],
+    },
+  },
+  {
+    id: "6",
+    name: "Doña Pepa",
+    rating: 4.5,
+    reviews: 830,
+    price: 22,
+    distance: "2.6",
+    deliveryTime: "20 min",
+    description: "Comida criolla tradicional hecha con amor",
+    promo: null,
+    freeDelivery: false,
+    imageUrl: {
+      uri: "https://res.cloudinary.com/drdul1vlf/image/upload/v1751066582/01_AJI_simqid.jpg",
+    },
+    menu: {
+      Popular: [
+        {
+          name: "Ají de Gallina",
+          price: 21,
+          image: {
+            uri: "https://res.cloudinary.com/drdul1vlf/image/upload/v1751066582/01_AJI_simqid.jpg",
+          },
+        },
+      ],
+      "Main Courses": [],
+      Appetizer: [],
+    },
+  },
+  {
+    id: "7",
+    name: "El Sabor de Casa",
+    rating: 4.6,
+    reviews: 910,
+    price: 26,
+    distance: "4.1",
+    deliveryTime: "18 min",
+    description: "Platos peruanos como hechos en casa",
+    promo: "Descuento en combos",
+    freeDelivery: true,
+    imageUrl: {
+      uri: "https://res.cloudinary.com/drdul1vlf/image/upload/v1751066746/maxresdefault_i4idqu.jpg",
+    },
+    menu: {
+      Popular: [
+        {
+          name: "Lomo Saltado",
+          price: 26,
+          image: {
+            uri: "https://res.cloudinary.com/drdul1vlf/image/upload/v1751066746/maxresdefault_i4idqu.jpg",
+          },
+        },
+      ],
+      "Main Courses": [],
+      Appetizer: [],
+    },
+  },
+  {
+    id: "8",
+    name: "Chifa Feliz",
+    rating: 4.4,
+    reviews: 790,
+    price: 22,
+    distance: "2.3",
+    deliveryTime: "15 min",
+    description: "Chifa con sabor peruano y tradición oriental",
+    promo: null,
+    freeDelivery: true,
+    imageUrl: {
+      uri: "https://res.cloudinary.com/drdul1vlf/image/upload/v1751066804/arroz-chaufa_egbkvw.jpg",
+    },
+    menu: {
       "Main Courses": [
         {
-          name: "Risotto alla Milanese",
-          price: 14,
+          name: "Arroz Chaufa",
+          price: 22,
           image: {
-            uri: "https://eu.tastescdn.net/thumbor/FPlA8RzQu6v3MHUWFp7hUJHrlIk=/1050x1050/filters:quality(65):brightness(2):contrast(2):rgb(2,-2,0):sharpen(0.2,0.2,true)/es/recipe/QD4zo5KuA-Zb3rF50As1/6802642f2c90ae9093dd6bf2f4d83c.jpeg",
+            uri: "https://res.cloudinary.com/drdul1vlf/image/upload/v1751066804/arroz-chaufa_egbkvw.jpg",
           },
         },
       ],
-      Appetizer: [
+      Popular: [],
+      Appetizer: [],
+    },
+  },
+  {
+    id: "9",
+    name: "La Leña",
+    rating: 4.8,
+    reviews: 1150,
+    price: 28,
+    distance: "3.0",
+    deliveryTime: "15 min",
+    description: "Especialistas en pollo a la brasa con leña",
+    promo: "Gratis bebida con combo",
+    freeDelivery: false,
+    imageUrl: {
+      uri: "https://res.cloudinary.com/drdul1vlf/image/upload/v1751068275/pollo-de-la-le%C3%B1a_zfkaqf.jpg",
+    },
+    menu: {
+      Popular: [
         {
-          name: "Bruschetta",
-          price: 6,
+          name: "Pollo a la Brasa",
+          price: 28,
           image: {
-            uri: "https://t4.ftcdn.net/jpg/12/30/06/33/360_F_1230063324_a7cd9bmpqrm5gdbLjKhIdwyD1OQZD2jt.jpg",
+            uri: "https://res.cloudinary.com/drdul1vlf/image/upload/v1751068275/pollo-de-la-le%C3%B1a_zfkaqf.jpg",
           },
         },
       ],
+      "Main Courses": [],
+      Appetizer: [],
     },
   },
   {

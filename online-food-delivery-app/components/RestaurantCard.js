@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, Image, TouchableOpacity, StyleSheet } from 'react-native';
-import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 const RestaurantCard = ({ item }) => {
@@ -9,116 +8,97 @@ const RestaurantCard = ({ item }) => {
   return (
     <TouchableOpacity
       onPress={() => navigation.navigate('DetailRestoran', { restaurant: item })}
-      style={styles.cardTouchable}
+      style={styles.card}
     >
-      <View style={styles.card}>
-        <Image source={item.imageUrl} style={styles.image} />
-        <View style={styles.textContainer}>
-          <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 6 }}>
-            <View style={styles.ratingBadge}>
-              <Ionicons name="star" size={12} color="#fff" />
-              <Text style={styles.ratingText}>{item.rating}</Text>
-            </View>
-            <Text style={{ marginLeft: 6, color: '#9CA3AF', fontSize: 12 }}>
-              ({item.reviews})
-            </Text>
-          </View>
+      <Image source={{ uri: item.imageUrl.uri || item.imageUrl }} style={styles.image} />
 
-          <Text style={styles.title}>{item.name}</Text>
-          <Text style={styles.description}>{item.description}</Text>
-
-          <Text style={styles.detailsText}>
-            Start from ${item.price} • {item.distance} km • Delivery in {item.deliveryTime}
-          </Text>
-
-          <View style={{ flexDirection: 'row', flexWrap: 'wrap', marginTop: 4 }}>
-            {item.promo && (
-              <Text style={[styles.badge, styles.extraDiscount]}>Extra discount</Text>
-            )}
-            {item.freeDelivery && (
-              <Text style={[styles.badge, styles.freeDelivery]}>Free delivery</Text>
-            )}
-          </View>
+      <View style={styles.infoContainer}>
+        <View style={styles.headerRow}>
+          <Text style={styles.name}>{item.name}</Text>
+          <Text style={styles.rating}>⭐ {item.rating}</Text>
         </View>
 
-        <View style={styles.heartIcon}>
-          <Ionicons name="heart-outline" size={20} color="#9CA3AF" />
+        <Text numberOfLines={2} style={styles.description}>
+          {item.description}
+        </Text>
+
+        <View style={styles.metaRow}>
+          <Text style={styles.metaText}>{item.deliveryTime}</Text>
+          <Text style={styles.metaText}>• {item.distance} km</Text>
+          {item.freeDelivery && <Text style={styles.freeDelivery}>• 🚚 Gratis</Text>}
         </View>
+
+        {item.promo && (
+          <Text style={styles.promoText}>🎁 {item.promo}</Text>
+        )}
       </View>
     </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
-  cardTouchable: {
-    marginBottom: 14,
-  },
   card: {
-    flexDirection: 'row',
-    backgroundColor: '#F9FAFB',
-    borderRadius: 12,
-    padding: 14,
-    elevation: 2,
-    alignItems: 'center',
-    position: 'relative',
+    backgroundColor: '#fff',
+    borderRadius: 18,
+    overflow: 'hidden',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOpacity: 0.08,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
+    marginBottom: 16,
   },
   image: {
-    width: 100,
-    height: 100,
-    borderRadius: 12,
-    marginRight: 14,
+    width: '100%',
+    height: 180,
+    resizeMode: 'cover',
   },
-  textContainer: {
-    flex: 1,
+  infoContainer: {
+    padding: 14,
   },
-  title: {
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginBottom: 6,
+  },
+  name: {
     fontSize: 18,
     fontWeight: '700',
     color: '#111827',
+    flex: 1,
+    marginRight: 10,
+  },
+  rating: {
+    fontSize: 14,
+    color: '#F59E0B',
+    fontWeight: '600',
   },
   description: {
-    fontSize: 13,
+    fontSize: 14,
     color: '#6B7280',
+    marginBottom: 8,
+  },
+  metaRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    alignItems: 'center',
     marginBottom: 4,
   },
-  detailsText: {
+  metaText: {
     fontSize: 13,
     color: '#4B5563',
-  },
-  badge: {
-    borderRadius: 20,
-    paddingVertical: 2,
-    paddingHorizontal: 10,
-    marginRight: 6,
-    fontSize: 12,
-    color: '#fff',
-    alignSelf: 'flex-start',
-    overflow: 'hidden',
-  },
-  extraDiscount: {
-    backgroundColor: '#2563EB',
+    marginRight: 10,
   },
   freeDelivery: {
-    backgroundColor: '#F59E0B',
+    fontSize: 13,
+    color: '#10B981',
+    fontWeight: '600',
   },
-  ratingBadge: {
-    backgroundColor: '#FBBF24',
-    borderRadius: 12,
-    paddingHorizontal: 6,
-    paddingVertical: 2,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  ratingText: {
-    fontSize: 12,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginLeft: 4,
-  },
-  heartIcon: {
-    position: 'absolute',
-    top: 10,
-    right: 10,
+  promoText: {
+    fontSize: 13,
+    color: '#EF4444',
+    fontWeight: '600',
+    marginTop: 4,
   },
 });
 

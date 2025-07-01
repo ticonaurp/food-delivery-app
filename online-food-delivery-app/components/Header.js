@@ -1,42 +1,41 @@
-// Header.js
-import React from 'react';
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  TextInput,
-  Image,
-  StyleSheet,
-} from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
+import React from "react";
+import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import { useNavigation } from "@react-navigation/native";
 
-const Header = ({ currentAddress }) => {
+const Header = ({ currentAddress, openAddressSheet }) => {
+  const navigation = useNavigation();
+
   return (
     <View style={styles.wrapper}>
-      {/* Imagen de fondo borrosa */}
       <Image
         source={{
-          uri:
-            'https://storage.googleapis.com/a1aa/image/adc687b5-006d-4ba1-6105-1c8ba29ccb4b.jpg',
+          uri: "https://storage.googleapis.com/a1aa/image/adc687b5-006d-4ba1-6105-1c8ba29ccb4b.jpg",
         }}
         style={styles.headerBgImage}
         resizeMode="cover"
         blurRadius={2}
       />
 
-      {/* Capa de color y contenido */}
       <LinearGradient
-        colors={['#ff5f6d', '#ffc371']}
+        colors={["#ff5f6d", "#ffc371"]}
         style={styles.header}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
       >
         <View style={{ flex: 1 }}>
           <Text style={styles.addressLabel}>Your current address</Text>
-          <TouchableOpacity style={styles.addressContainer}>
-            <Text style={styles.addressText}>{currentAddress}</Text>
+          <TouchableOpacity
+            style={styles.addressContainer}
+            onPress={openAddressSheet}
+          >
+            <Text style={styles.addressText}>
+              {typeof currentAddress === "string"
+                ? currentAddress
+                : "Dirección no disponible"}
+            </Text>
             <Ionicons
               name="chevron-down"
               size={16}
@@ -55,14 +54,19 @@ const Header = ({ currentAddress }) => {
           </TouchableOpacity>
         </View>
 
-        <View style={styles.searchBox}>
-          <Ionicons name="search-outline" size={20} color="#aaa" />
-          <TextInput
-            placeholder="What would you like to eat?"
-            placeholderTextColor="#aaa"
-            style={styles.input}
+        <TouchableOpacity
+          style={styles.searchBox}
+          activeOpacity={0.8}
+          onPress={() => navigation.navigate("SearchScreen")}
+        >
+          <Ionicons
+            name="search-outline"
+            size={20}
+            color="#9CA3AF"
+            style={{ marginRight: 8 }}
           />
-        </View>
+          <Text style={styles.input}>What would you like to eat?</Text>
+        </TouchableOpacity>
       </LinearGradient>
     </View>
   );
@@ -70,7 +74,7 @@ const Header = ({ currentAddress }) => {
 
 const styles = StyleSheet.create({
   wrapper: {
-    position: 'relative',
+    position: "relative",
   },
   header: {
     paddingTop: 50,
@@ -81,10 +85,10 @@ const styles = StyleSheet.create({
     zIndex: 2,
   },
   headerBgImage: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
-    width: '100%',
+    width: "100%",
     height: 180,
     opacity: 0.2,
     borderBottomLeftRadius: 30,
@@ -92,41 +96,44 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   addressLabel: {
-    color: 'rgba(255,255,255,0.8)',
+    color: "rgba(255,255,255,0.8)",
     fontSize: 12,
     marginBottom: 4,
   },
   addressContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   addressText: {
-    color: '#fff',
-    fontWeight: '600',
+    color: "#fff",
+    fontWeight: "600",
     fontSize: 14,
   },
   headerIcons: {
-    position: 'absolute',
+    position: "absolute",
     right: 16,
     top: 50,
-    flexDirection: 'row',
+    flexDirection: "row",
     zIndex: 3,
   },
   searchBox: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
-    borderRadius: 20,
+    flexDirection: "row",
+    backgroundColor: "#fff",
+    borderRadius: 24,
     paddingHorizontal: 16,
-    alignItems: 'center',
-    height: 40,
+    alignItems: "center",
+    height: 48,
     marginTop: 16,
-    zIndex: 3,
+    elevation: 3,
+    shadowColor: "#000",
+    shadowOpacity: 0.05,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 6,
   },
   input: {
-    marginLeft: 8,
-    fontSize: 14,
+    fontSize: 15,
+    color: "#6B7280",
     flex: 1,
-    color: '#000',
   },
 });
 
