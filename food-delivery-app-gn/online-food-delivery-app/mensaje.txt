@@ -1,0 +1,23 @@
+feat(auth+ui): flujo de dirección con invitado + rediseño de LoginScreen
+
+- Agregado ConfirmAddressScreen con mapa y geolocalización por pin central
+- Implementado login como invitado con dirección y coordenadas desde el mapa
+- Contexto AuthContext actualizado para guardar dirección y coords del invitado
+- HomeScreen ahora muestra la dirección seleccionada en tiempo real desde el contexto
+- Modal AddressBottomSheet reutiliza lógica de selección de dirección
+- Validación de distancia por fórmula de Haversine para evitar peticiones repetidas a Google
+- Corrección: se muestra siempre una dirección tipo string para evitar errores de renderizado
+- Navegación segura: uso de navigation.reset hacia MainTabs luego de confirmar dirección
+- Registro de ConfirmAddressScreen en RootStack antes del login
+- Protección adicional con Array.isArray para evitar errores en filtros
+
+- Rediseño completo de LoginScreen:
+  • Reemplazo de expo-status-bar por StatusBar nativa con fondo rojo sólido
+  • Botones sociales redondeados estilo tarjeta, con bordes por marca y sombra sutil
+  • Layout con SafeAreaView y fondo extendido detrás de la status bar
+  • Enlace “Ahora no” reposicionado y estilo limpio
+
+- app.json actualizado con color de barra de navegación (androidNavigationBar)
+- Eliminadas llamadas innecesarias de expo-navigation-bar desde App.js
+
+Este commit implementa un flujo robusto para usuarios invitados y mejora la experiencia visual en la pantalla de inicio de sesión.

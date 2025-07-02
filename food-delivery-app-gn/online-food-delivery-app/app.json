@@ -1,0 +1,54 @@
+{
+  "expo": {
+    "scheme": "ofdapp",                
+    "platforms": ["ios", "android", "web"],
+    "name": "Online Food Delivery App",
+    "slug": "online-food-delivery-app",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "jsEngine": "jsc",
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "googleMapsApiKey": "AIzaSyDEIvwX02V_M-kI1O3-ynCF09D-Yv7CDVA",
+      "auth0ClientId": "U3WOrnybeZnBNvu4PrZSudWuHjkTMvai",
+      "auth0Domain":   "dev-ix8deo5de8ryya1n.us.auth0.com"
+    },
+   "plugins": [
+    ["expo-navigation-bar", {
+        "backgroundColor": "#E94864",
+        "buttonStyle": "light"
+      }],
+     "expo-web-browser"
+   ],
+       "androidStatusBar": {
+      "barStyle": "light-content",
+      "backgroundColor": "#E94864",
+      "translucent": false
+    },
+    "androidNavigationBar": {
+      "visible": "visible",
+      "barStyle": "light-content",
+      "backgroundColor": "#E94864"
+    }
+    
+  }
+}
