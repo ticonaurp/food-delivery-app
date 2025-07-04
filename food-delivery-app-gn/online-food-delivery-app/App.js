@@ -11,6 +11,7 @@ import { NavigationContainer } from '@react-navigation/native';
 import * as NavigationBar from 'expo-navigation-bar';  // ← Import necesario
 import RootStack from './navigation/RootStack';
 import { AuthProvider } from './context/AuthContext';
+import { CartProvider } from './context/CartContext';
 
 export default function App() {
   console.log('¿Hermes está activo?', !!global.HermesInternal);
@@ -24,6 +25,7 @@ useEffect(() => {
 
   return (
     <AuthProvider>
+      <CartProvider>
       <GestureHandlerRootView style={{ flex: 1 }}>
         <BottomSheetModalProvider>
           <NavigationContainer>
@@ -31,6 +33,7 @@ useEffect(() => {
           </NavigationContainer>
         </BottomSheetModalProvider>
       </GestureHandlerRootView>
+      </CartProvider>
     </AuthProvider>
   );
 }

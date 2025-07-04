@@ -1,7 +1,7 @@
 // src/navigation/RootStack.js
 import React, { useContext } from "react";
 import { createStackNavigator } from "@react-navigation/stack";
-
+import CartDetailScreen from '../screens/CartDetailScreen';
 import { AuthContext } from "../context/AuthContext";
 import LoginScreen from "../screens/LoginScreen";
 import ConfirmAddressScreen from "../screens/ConfirmAddressScreen";
@@ -14,7 +14,7 @@ import AllDayScreen from "../screens/AllDayScreen";
 import QuickDeliveryScreen from "../screens/QuickDeliveryScreen";
 import FilteredPlatosScreen from "../screens/FilteredPlatosScreen";
 import SearchScreen from "../screens/SearchScreen";
-
+import PaymentOptionsScreen from '../screens/PaymentOptionsScreen';
 const Stack = createStackNavigator();
 
 export default function RootStack() {
@@ -89,6 +89,15 @@ export default function RootStack() {
             component={SearchScreen}
             options={{ headerShown: true }}
           />
+          <Stack.Screen
+    name="CartDetail"
+    component={CartDetailScreen}
+    options={{ title: 'Detalle del Pedido' }}
+  />
+  <Stack.Screen
+  name="PaymentOptions"
+  component={PaymentOptionsScreen}
+/>
         </>
       )}
     </Stack.Navigator>

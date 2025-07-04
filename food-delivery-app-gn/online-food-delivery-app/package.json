@@ -7,7 +7,12 @@
     "ngrok": "expo start --tunnel",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "web": "expo start --web"
+    "web": "expo start --web",
+    "test": "jest"
+  },
+  "jest": {
+    "preset": "jest-expo",
+    "setupFilesAfterEnv": ["@testing-library/jest-native/extend-expect"]
   },
   "dependencies": {
     "@expo/metro-runtime": "~5.0.4",
@@ -30,6 +35,7 @@
     "expo-status-bar": "~2.2.3",
     "expo-web-browser": "~14.2.0",
     "firebase": "^11.9.1",
+    "jest-expo": "~53.0.9",
     "ngrok": "^5.0.0-beta.2",
     "react": "19.0.0",
     "react-dom": "19.0.0",
@@ -50,6 +56,8 @@
   "devDependencies": {
     "@babel/core": "^7.20.0",
     "@babel/plugin-proposal-optional-chaining": "^7.21.0",
+    "@testing-library/jest-native": "^5.4.3",
+    "@testing-library/react-native": "^13.2.0",
     "@types/react": "~19.0.10",
     "@types/react-native": "^0.72.8",
     "typescript": "~5.8.3"
