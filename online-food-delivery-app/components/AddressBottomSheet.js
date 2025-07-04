@@ -1,191 +1,214 @@
-import React, { useMemo, useRef, useState, useEffect, useCallback } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Dimensions, TextInput, ActivityIndicator } from 'react-native';
-import { BottomSheetModal } from '@gorhom/bottom-sheet';
-import MapView from 'react-native-maps';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import * as Location from 'expo-location';
-import Constants from 'expo-constants';
+"use client"
 
-const screen = Dimensions.get('window');
-const GOOGLE_KEY = Constants.expoConfig.extra.googleMapsApiKey;
+import { useContext } from "react"
+import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native"
+import { Ionicons } from "@expo/vector-icons"
+import { AuthContext } from "../context/AuthContext"
+import { CartContext } from "../context/CartContext"
 
-const AddressBottomSheet = ({ sheetRef, onAddressSelected }) => {
-  const snapPoints = useMemo(() => ['75%'], []);
-  const mapRef = useRef(null);
+const RestaurantCard = ({ item, onPress }) => {
+  const authContext = useContext(AuthContext)
+  const cartContext = useContext(CartContext)
 
-  const [mapRegion, setMapRegion] = useState(null);
-  const [address, setAddress] = useState('');
-  const [loading, setLoading] = useState(false);
+  // Verificar que item existe
+  if (!item || !item.id) {
+    return null
+  }
 
-  useEffect(() => {
-    getCurrentLocation();
-  }, []);
+  const favoriteRestaurants = authContext?.favoriteRestaurants || []
+  const toggleFavoriteRestaurant = authContext?.toggleFavoriteRestaurant
+  const canAddItem = cartContext?.canAddItem
 
-  const getCurrentLocation = async () => {
-    const { status } = await Location.requestForegroundPermissionsAsync();
-    if (status !== 'granted') return;
+  const isFavorite = favoriteRestaurants.includes(item.id)
+  const canAddFromThisRestaurant = canAddItem ? canAddItem(item) : true
 
-    const location = await Location.getCurrentPositionAsync({});
-    const { latitude, longitude } = location.coords;
-
-    const region = {
-      latitude,
-      longitude,
-      latitudeDelta: 0.005,
-      longitudeDelta: 0.005,
-    };
-
-    setMapRegion(region);
-    fetchAddressFromCoords(latitude, longitude);
-    mapRef.current?.animateToRegion(region, 1000);
-  };
-
-  const fetchAddressFromCoords = async (lat, lng) => {
-    setLoading(true);
-    try {
-      const response = await fetch(
-        `https://maps.googleapis.com/maps/api/geocode/json?latlng=${lat},${lng}&key=${GOOGLE_KEY}&language=es`
-      );
-      const data = await response.json();
-      const result = data.results?.[0]?.formatted_address || '';
-      setAddress(result);
-    } catch (err) {
-      console.warn('Error obteniendo dirección:', err);
+  const handleFavoritePress = () => {
+    if (toggleFavoriteRestaurant) {
+      toggleFavoriteRestaurant(item.id)
     }
-    setLoading(false);
-  };
+  }
 
-  const handleRegionChangeComplete = (region) => {
-    setMapRegion(region);
-    fetchAddressFromCoords(region.latitude, region.longitude);
-  };
-
-const confirmAddress = () => {
-  if (!address || !mapRegion) return;
-
-  onAddressSelected(
-    address,
-    {
-      latitude: mapRegion.latitude,
-      longitude: mapRegion.longitude,
+  const handlePress = () => {
+    if (onPress && typeof onPress === "function") {
+      onPress(item)
     }
-  );
-
-  sheetRef.current?.dismiss();
-};
-
+  }
 
   return (
-    <BottomSheetModal
-      ref={sheetRef}
-      index={0}
-      snapPoints={snapPoints}
-      enablePanDownToClose
-      handleIndicatorStyle={{ backgroundColor: '#ccc', width: 40 }}
-      backgroundStyle={{
-        borderTopLeftRadius: 24,
-        borderTopRightRadius: 24,
-        backgroundColor: 'white',
-      }}
-    >
-      <View style={{ flex: 1 }}>
-        {mapRegion && (
-          <MapView
-            ref={mapRef}
-            style={styles.map}
-            initialRegion={mapRegion}
-            onRegionChangeComplete={handleRegionChangeComplete}
-            showsUserLocation
-          />
-        )}
-
-        <View style={styles.pin}>
-          <Ionicons name="location-sharp" size={30} color="#E94864" />
+    <TouchableOpacity style={styles.container} onPress={handlePress}>
+      <View style={styles.imageContainer}>
+        <Image source={{ uri: item.image || "/placeholder.svg?height=160&width=300" }} style={styles.image} />
+        <View style={styles.ratingBadge}>
+          <Ionicons name="star" size={12} color="white" />
+          <Text style={styles.ratingText}>{item.rating || "0.0"}</Text>
         </View>
-
-        <TouchableOpacity style={styles.miraBtn} onPress={getCurrentLocation}>
-          <Ionicons name="locate" size={22} color="#333" />
-        </TouchableOpacity>
-
-        <View style={styles.bottomContent}>
-          <Text style={styles.title}>Confirma tu dirección</Text>
-
-          <View style={styles.inputContainer}>
-            <Ionicons name="search" size={16} color="#999" style={{ marginRight: 8 }} />
-            <TextInput
-              value={address}
-              placeholder="Dirección"
-              placeholderTextColor="#999"
-              editable={false}
-              style={styles.input}
-            />
-            {loading && <ActivityIndicator size="small" color="#E94864" />}
+        {!canAddFromThisRestaurant && (
+          <View style={styles.unavailableBadge}>
+            <Text style={styles.unavailableText}>Different Restaurant</Text>
           </View>
+        )}
+      </View>
 
-          <TouchableOpacity style={styles.confirmBtn} onPress={confirmAddress}>
-            <Text style={styles.confirmText}>Confirmar</Text>
+      <View style={styles.contentContainer}>
+        <View style={styles.headerRow}>
+          <Text style={styles.restaurantName}>{item.name || "Restaurant"}</Text>
+          <TouchableOpacity onPress={handleFavoritePress}>
+            <Ionicons name={isFavorite ? "heart" : "heart-outline"} size={20} color={isFavorite ? "#E94864" : "#666"} />
           </TouchableOpacity>
         </View>
+
+        <Text style={styles.cuisineType}>{item.type || "Restaurant"}</Text>
+        <Text style={styles.description}>{item.description || "Great food"}</Text>
+
+        <View style={styles.infoRow}>
+          <Text style={styles.infoText}>
+            {item.distance || "0km"} • {item.deliveryTime || "30 min"}
+          </Text>
+        </View>
+
+        <View style={styles.tagsContainer}>
+          {item.promo && (
+            <View style={[styles.tag, styles.discountTag]}>
+              <Text style={styles.discountTagText}>Extra discount</Text>
+            </View>
+          )}
+          {item.freeDelivery && (
+            <View style={[styles.tag, styles.deliveryTag]}>
+              <Text style={styles.deliveryTagText}>Free delivery</Text>
+            </View>
+          )}
+          {!canAddFromThisRestaurant && (
+            <View style={[styles.tag, styles.warningTag]}>
+              <Text style={styles.warningTagText}>Clear cart to order</Text>
+            </View>
+          )}
+        </View>
       </View>
-    </BottomSheetModal>
-  );
-};
+    </TouchableOpacity>
+  )
+}
 
 const styles = StyleSheet.create({
-  map: {
-    width: '100%',
-    height: screen.height * 0.3,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
-  },
-  pin: {
-    position: 'absolute',
-    top: screen.height * 0.3 / 2 - 30,
-    left: screen.width / 2 - 15,
-    zIndex: 10,
-  },
-  miraBtn: {
-    position: 'absolute',
-    right: 16,
-    top: screen.height * 0.3 - 40,
-    backgroundColor: '#fff',
-    padding: 8,
-    borderRadius: 50,
-    elevation: 4,
-  },
-  bottomContent: {
-    padding: 20,
-    gap: 16,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#111827',
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#F3F4F6',
+  container: {
+    backgroundColor: "white",
     borderRadius: 12,
-    paddingHorizontal: 12,
-    paddingVertical: 14,
+    marginBottom: 16,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
-  input: {
+  imageContainer: {
+    position: "relative",
+  },
+  image: {
+    width: "100%",
+    height: 160,
+    resizeMode: "cover",
+  },
+  ratingBadge: {
+    position: "absolute",
+    top: 12,
+    left: 12,
+    backgroundColor: "#FFC107",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  ratingText: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "bold",
+    marginLeft: 2,
+  },
+  unavailableBadge: {
+    position: "absolute",
+    top: 12,
+    right: 12,
+    backgroundColor: "rgba(0,0,0,0.7)",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  unavailableText: {
+    color: "white",
+    fontSize: 10,
+    fontWeight: "600",
+  },
+  contentContainer: {
+    padding: 16,
+  },
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 4,
+  },
+  restaurantName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
     flex: 1,
-    fontSize: 15,
-    color: '#111',
   },
-  confirmBtn: {
-    backgroundColor: '#E94864',
-    paddingVertical: 16,
-    borderRadius: 12,
-    alignItems: 'center',
+  cuisineType: {
+    fontSize: 14,
+    color: "#777",
+    marginBottom: 4,
   },
-  confirmText: {
-    color: '#fff',
-    fontSize: 15,
-    fontWeight: 'bold',
+  description: {
+    fontSize: 14,
+    color: "#777",
+    marginBottom: 8,
   },
-});
+  infoRow: {
+    marginBottom: 12,
+  },
+  infoText: {
+    fontSize: 12,
+    color: "#555",
+  },
+  tagsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+  },
+  tag: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+    marginRight: 8,
+    marginBottom: 4,
+  },
+  discountTag: {
+    backgroundColor: "#e0f7fa",
+  },
+  discountTagText: {
+    color: "#00838f",
+    fontSize: 12,
+    fontWeight: "500",
+  },
+  deliveryTag: {
+    backgroundColor: "#fff3e0",
+  },
+  deliveryTagText: {
+    color: "#f57c00",
+    fontSize: 12,
+    fontWeight: "500",
+  },
+  warningTag: {
+    backgroundColor: "#ffebee",
+  },
+  warningTagText: {
+    color: "#c62828",
+    fontSize: 12,
+    fontWeight: "500",
+  },
+})
 
-export default AddressBottomSheet;
+export default RestaurantCard

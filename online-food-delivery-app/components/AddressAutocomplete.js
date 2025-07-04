@@ -1,144 +1,196 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import {
-  View,
-  TextInput,
-  FlatList,
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-} from 'react-native';
-import Constants from 'expo-constants';
+"use client"
 
-const GOOGLE_API_KEY = Constants.expoConfig.extra.googleMapsApiKey;
+import { View, Text, Image, TouchableOpacity, StyleSheet } from "react-native"
+import { Ionicons } from "@expo/vector-icons"
+import { useContext } from "react"
+import { AuthContext } from "../context/AuthContext"
+import { CartContext } from "../context/CartContext"
 
-export default function AddressAutocomplete({ onPlaceSelected }) {
-  const [input, setInput] = useState('');
-  const [results, setResults] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [debouncedInput, setDebouncedInput] = useState('');
+const RestaurantCard = ({ item, onPress }) => {
+  const { favoriteRestaurants, toggleFavoriteRestaurant } = useContext(AuthContext)
+  const { canAddItem } = useContext(CartContext)
+  const isFavorite = favoriteRestaurants.includes(item.id)
+  const canAddFromThisRestaurant = canAddItem(item)
 
-  
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedInput(input);
-    }, 500);
-
-    return () => clearTimeout(handler);
-  }, [input]);
-
-  useEffect(() => {
-    if (debouncedInput.length >= 3) {
-      fetchSuggestions(debouncedInput);
-    } else {
-      setResults([]);
-    }
-  }, [debouncedInput]);
-
-  const fetchSuggestions = async (text) => {
-    setLoading(true);
-    try {
-      const res = await fetch(
-        `https://maps.googleapis.com/maps/api/place/autocomplete/json?input=${encodeURIComponent(
-          text
-        )}&key=${GOOGLE_API_KEY}&language=es&types=address`
-      );
-      const json = await res.json();
-
-      console.log('🔎 Autocomplete results:', json);
-
-      if (json.status === 'OK') {
-        setResults(json.predictions || []);
-      } else {
-        console.warn('❌ Error en Autocomplete:', json.status, json.error_message);
-        setResults([]);
-      }
-    } catch (err) {
-      console.error('🔥 Error al consultar autocomplete:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleSelect = async (placeId, description) => {
-    setResults([]);
-    setInput(description);
-
-    try {
-      const res = await fetch(
-        `https://maps.googleapis.com/maps/api/place/details/json?place_id=${placeId}&key=${GOOGLE_API_KEY}`
-      );
-      const json = await res.json();
-
-      console.log('📍 Place details:', json);
-
-      if (json.status === 'OK') {
-        const location = json.result.geometry.location;
-        onPlaceSelected({
-          coords: {
-            latitude: location.lat,
-            longitude: location.lng,
-          },
-          address: description,
-        });
-      } else {
-        console.warn('❌ Error al obtener detalles:', json.status);
-      }
-    } catch (err) {
-      console.error('🔥 Error al obtener detalles del lugar:', err);
-    }
-  };
+  const handleFavoritePress = () => {
+    toggleFavoriteRestaurant(item.id)
+  }
 
   return (
-    <View style={styles.wrapper}>
-      <TextInput
-        value={input}
-        onChangeText={setInput}
-        placeholder="Escribe tu dirección"
-        style={styles.input}
-        placeholderTextColor="#999"
-      />
+    <TouchableOpacity style={styles.container} onPress={() => onPress?.(item)}>
+      <View style={styles.imageContainer}>
+        <Image source={{ uri: item.image }} style={styles.image} />
+        <View style={styles.ratingBadge}>
+          <Ionicons name="star" size={12} color="white" />
+          <Text style={styles.ratingText}>{item.rating}</Text>
+        </View>
+        {!canAddFromThisRestaurant && (
+          <View style={styles.unavailableBadge}>
+            <Text style={styles.unavailableText}>Different Restaurant</Text>
+          </View>
+        )}
+      </View>
 
-      {loading && <ActivityIndicator size="small" color="#666" style={{ marginTop: 6 }} />}
+      <View style={styles.contentContainer}>
+        <View style={styles.headerRow}>
+          <Text style={styles.restaurantName}>{item.name}</Text>
+          <TouchableOpacity onPress={handleFavoritePress}>
+            <Ionicons name={isFavorite ? "heart" : "heart-outline"} size={20} color={isFavorite ? "#E94864" : "#666"} />
+          </TouchableOpacity>
+        </View>
 
-      {results.length > 0 && (
-        <FlatList
-          data={results}
-          keyExtractor={(item) => item.place_id}
-          keyboardShouldPersistTaps="always"
-          renderItem={({ item }) => (
-            <TouchableOpacity
-              style={styles.result}
-              onPress={() => handleSelect(item.place_id, item.description)}
-            >
-              <Text style={styles.resultText}>{item.description}</Text>
-            </TouchableOpacity>
+        <Text style={styles.cuisineType}>{item.type}</Text>
+        <Text style={styles.description}>{item.description}</Text>
+
+        <View style={styles.infoRow}>
+          <Text style={styles.infoText}>
+            {item.distance} • {item.deliveryTime}
+          </Text>
+        </View>
+
+        <View style={styles.tagsContainer}>
+          {item.promo && (
+            <View style={[styles.tag, styles.discountTag]}>
+              <Text style={styles.discountTagText}>Extra discount</Text>
+            </View>
           )}
-        />
-      )}
-    </View>
-  );
+          {item.freeDelivery && (
+            <View style={[styles.tag, styles.deliveryTag]}>
+              <Text style={styles.deliveryTagText}>Free delivery</Text>
+            </View>
+          )}
+          {!canAddFromThisRestaurant && (
+            <View style={[styles.tag, styles.warningTag]}>
+              <Text style={styles.warningTagText}>Clear cart to order</Text>
+            </View>
+          )}
+        </View>
+      </View>
+    </TouchableOpacity>
+  )
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
+  container: {
+    backgroundColor: "white",
+    borderRadius: 12,
+    marginBottom: 16,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  imageContainer: {
+    position: "relative",
+  },
+  image: {
+    width: "100%",
+    height: 160,
+    resizeMode: "cover",
+  },
+  ratingBadge: {
+    position: "absolute",
+    top: 12,
+    left: 12,
+    backgroundColor: "#FFC107",
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  ratingText: {
+    color: "white",
+    fontSize: 12,
+    fontWeight: "bold",
+    marginLeft: 2,
+  },
+  unavailableBadge: {
+    position: "absolute",
+    top: 12,
+    right: 12,
+    backgroundColor: "rgba(0,0,0,0.7)",
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  unavailableText: {
+    color: "white",
+    fontSize: 10,
+    fontWeight: "600",
+  },
+  contentContainer: {
+    padding: 16,
+  },
+  headerRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 4,
+  },
+  restaurantName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
+    flex: 1,
+  },
+  cuisineType: {
+    fontSize: 14,
+    color: "#777",
+    marginBottom: 4,
+  },
+  description: {
+    fontSize: 14,
+    color: "#777",
+    marginBottom: 8,
+  },
+  infoRow: {
     marginBottom: 12,
   },
-  input: {
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 6,
-    padding: 12,
-    fontSize: 16,
+  infoText: {
+    fontSize: 12,
+    color: "#555",
   },
-  result: {
-    paddingVertical: 10,
-    paddingHorizontal: 6,
-    borderBottomWidth: 1,
-    borderBottomColor: '#eee',
+  tagsContainer: {
+    flexDirection: "row",
+    flexWrap: "wrap",
   },
-  resultText: {
-    fontSize: 15,
-    color: '#333',
+  tag: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 4,
+    marginRight: 8,
+    marginBottom: 4,
   },
-});
+  discountTag: {
+    backgroundColor: "#e0f7fa",
+  },
+  discountTagText: {
+    color: "#00838f",
+    fontSize: 12,
+    fontWeight: "500",
+  },
+  deliveryTag: {
+    backgroundColor: "#fff3e0",
+  },
+  deliveryTagText: {
+    color: "#f57c00",
+    fontSize: 12,
+    fontWeight: "500",
+  },
+  warningTag: {
+    backgroundColor: "#ffebee",
+  },
+  warningTagText: {
+    color: "#c62828",
+    fontSize: 12,
+    fontWeight: "500",
+  },
+})
+
+export default RestaurantCard

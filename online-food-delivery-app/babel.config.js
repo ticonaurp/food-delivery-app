@@ -1,7 +1,7 @@
-module.exports = {
-  presets: ['babel-preset-expo'],
-  plugins: [
-    'react-native-reanimated/plugin',                // ya lo tenías
-    '@babel/plugin-proposal-optional-chaining'       // ← este es nuevo
-  ],
-};
+module.exports = (api) => {
+  api.cache(true)
+  return {
+    presets: ["babel-preset-expo"],
+    plugins: ["react-native-reanimated/plugin"],
+  }
+}

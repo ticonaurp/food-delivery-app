@@ -1,12 +1,13 @@
-import React from "react";
-import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
-import Ionicons from "@expo/vector-icons/Ionicons";
+"use client"
+
+import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native"
+import { LinearGradient } from "expo-linear-gradient"
+import { Ionicons } from "@expo/vector-icons"
+import { useNavigation } from "@react-navigation/native"
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import { useNavigation } from "@react-navigation/native";
 
 const Header = ({ currentAddress, openAddressSheet }) => {
-  const navigation = useNavigation();
+  const navigation = useNavigation()
 
   return (
     <View style={styles.wrapper}>
@@ -18,33 +19,16 @@ const Header = ({ currentAddress, openAddressSheet }) => {
         resizeMode="cover"
         blurRadius={2}
       />
-
-      <LinearGradient
-        colors={["#ff5f6d", "#ffc371"]}
-        style={styles.header}
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-      >
+      <LinearGradient colors={["#ff5f6d", "#ffc371"]} style={styles.header} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }}>
         <View style={{ flex: 1 }}>
           <Text style={styles.addressLabel}>Your current address</Text>
-          <TouchableOpacity
-            style={styles.addressContainer}
-            onPress={openAddressSheet}
-          >
+          <TouchableOpacity style={styles.addressContainer} onPress={openAddressSheet}>
             <Text style={styles.addressText}>
-              {typeof currentAddress === "string"
-                ? currentAddress
-                : "Dirección no disponible"}
+              {typeof currentAddress === "string" ? currentAddress : "Dirección no disponible"}
             </Text>
-            <Ionicons
-              name="chevron-down"
-              size={16}
-              color="white"
-              style={{ marginLeft: 4, marginTop: 2 }}
-            />
+            <Ionicons name="chevron-down" size={16} color="white" style={{ marginLeft: 4, marginTop: 2 }} />
           </TouchableOpacity>
         </View>
-
         <View style={styles.headerIcons}>
           <TouchableOpacity>
             <FontAwesome5 name="heart" size={22} color="white" />
@@ -53,24 +37,18 @@ const Header = ({ currentAddress, openAddressSheet }) => {
             <Ionicons name="notifications-outline" size={22} color="white" />
           </TouchableOpacity>
         </View>
-
         <TouchableOpacity
           style={styles.searchBox}
           activeOpacity={0.8}
           onPress={() => navigation.navigate("SearchScreen")}
         >
-          <Ionicons
-            name="search-outline"
-            size={20}
-            color="#9CA3AF"
-            style={{ marginRight: 8 }}
-          />
+          <Ionicons name="search-outline" size={20} color="#9CA3AF" style={{ marginRight: 8 }} />
           <Text style={styles.input}>What would you like to eat?</Text>
         </TouchableOpacity>
       </LinearGradient>
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   wrapper: {
@@ -135,6 +113,6 @@ const styles = StyleSheet.create({
     color: "#6B7280",
     flex: 1,
   },
-});
+})
 
-export default Header;
+export default Header

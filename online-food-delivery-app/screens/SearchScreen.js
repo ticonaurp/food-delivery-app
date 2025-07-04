@@ -53,7 +53,7 @@ const SearchScreen = () => {
 
   return (
     <View style={styles.container}>
-      {/* Barra de búsqueda */}
+      
       <View style={styles.searchBar}>
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Ionicons name="arrow-back" size={22} color="#374151" />

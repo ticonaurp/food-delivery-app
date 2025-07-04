@@ -1,218 +1,140 @@
-// src/screens/LoginScreen.js
-import React, { useContext, useEffect } from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ImageBackground,
-  Image,
-  Pressable,
-  Platform,
-  StatusBar as RNStatusBar,
-} from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import Constants from 'expo-constants';
-import * as WebBrowser from 'expo-web-browser';
-import {
-  useAuthRequest,
-  ResponseType,
-  makeRedirectUri,
-} from 'expo-auth-session';
-import Ionicons from '@expo/vector-icons/Ionicons';
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { AuthContext } from '../context/AuthContext';
+"use client"
 
-WebBrowser.maybeCompleteAuthSession();
+import { useContext, useState } from "react"
+import { View, Text, TouchableOpacity, StyleSheet, Alert } from "react-native"
+import { StatusBar } from "expo-status-bar"
+import { Ionicons } from "@expo/vector-icons"
+import { AuthContext } from "../context/AuthContext"
 
-export default function LoginScreen({ navigation }) {
-  const { user, login } = useContext(AuthContext);
+const LoginScreen = ({ navigation }) => {
+  const { login, loginAsGuest } = useContext(AuthContext)
+  const [isLoading, setIsLoading] = useState(false)
 
-  useEffect(() => {
-    if (user) navigation.replace('MainTabs');
-  }, [user]);
-
-  const redirectUri = makeRedirectUri({ useProxy: true });
-  const [request, response, promptAsync] = useAuthRequest(
-    {
-      clientId: 'TU_CLIENT_ID_DE_GOOGLE',
-      responseType: ResponseType.IdToken,
-      scopes: ['openid', 'profile', 'email'],
-      redirectUri,
-    },
-    { authorizationEndpoint: 'https://accounts.google.com/o/oauth2/v2/auth' }
-  );
-
-  useEffect(() => {
-    if (response?.type === 'success') {
-      login(response);
-      navigation.replace('MainTabs');
+  const handleLogin = async () => {
+    setIsLoading(true)
+    try {
+      await login()
+    } catch (error) {
+      Alert.alert("Error", "Failed to login. Please try again.")
+    } finally {
+      setIsLoading(false)
     }
-  }, [response]);
+  }
+
+  const handleGuestLogin = async () => {
+    setIsLoading(true)
+    try {
+      await loginAsGuest("Default Address", null)
+      navigation.replace("MainTabs")
+    } catch (error) {
+      Alert.alert("Error", "Failed to continue as guest. Please try again.")
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   return (
-    <View style={styles.screen}>
-      {/* StatusBar traslúcido sin backgroundColor */}
-      <RNStatusBar
-  backgroundColor="#E94864"
-  barStyle="light-content"
-  translucent={false}
-/>
+    <View style={styles.container}>
+      <StatusBar style="light" />
 
-      {/* Vista bajo la StatusBar para simular su color */}
-      <View style={styles.statusBarBackground} />
+      <View style={styles.header}>
+        <Text style={styles.title}>Welcome to</Text>
+        <Text style={styles.appName}>Restaurant App</Text>
+        <Text style={styles.subtitle}>Delicious food delivered to your door</Text>
+      </View>
 
-      <ImageBackground
-        source={require('../assets/bg-food.jpg')}
-        style={styles.bg}
-        resizeMode="cover"
-      >
-        <View style={styles.overlay} />
+      <View style={styles.content}>
+        <TouchableOpacity style={[styles.button, styles.loginButton]} onPress={handleLogin} disabled={isLoading}>
+          <Ionicons name="log-in" size={20} color="white" style={styles.buttonIcon} />
+          <Text style={styles.loginButtonText}>{isLoading ? "Logging in..." : "Login with Auth0"}</Text>
+        </TouchableOpacity>
 
-        <SafeAreaView style={styles.container}>
-          <Pressable
-            style={styles.skipBtn}
-            onPress={() => navigation.navigate('ConfirmAddress')}
-          >
-            <Text style={styles.skipText}>Ahora no</Text>
-          </Pressable>
+        <TouchableOpacity style={[styles.button, styles.guestButton]} onPress={handleGuestLogin} disabled={isLoading}>
+          <Ionicons name="person" size={20} color="#E94864" style={styles.buttonIcon} />
+          <Text style={styles.guestButtonText}>{isLoading ? "Please wait..." : "Continue as Guest"}</Text>
+        </TouchableOpacity>
+      </View>
 
-          <View style={styles.header}>
-            <Image
-              source={require('../assets/logo.png')}
-              style={styles.logo}
-              resizeMode="contain"
-            />
-            <Text style={styles.title}>Bienvenido</Text>
-            <Text style={styles.subtitle}>Elige cómo ingresar</Text>
-          </View>
-
-          <View style={styles.buttonsContainer}>
-            <Pressable
-              style={[styles.btnSocial, styles.btnGoogleBorder]}
-              disabled={!request}
-              onPress={() => promptAsync({ useProxy: true })}
-            >
-              <Ionicons name="logo-google" size={20} color="#DB4437" />
-              <Text style={[styles.btnSocialText, { color: '#DB4437' }]}>
-                Continuar con Google
-              </Text>
-            </Pressable>
-
-            <Pressable
-              style={[styles.btnSocial, styles.btnFacebookBorder]}
-              onPress={() => navigation.replace('MainTabs')}
-            >
-              <FontAwesome name="facebook" size={20} color="#1877F2" />
-              <Text style={[styles.btnSocialText, { color: '#1877F2' }]}>
-                Continuar con Facebook
-              </Text>
-            </Pressable>
-
-            <Pressable
-              style={[styles.btnSocial, styles.btnOtherBorder]}
-              onPress={() => navigation.navigate('EmailLoginScreen')}
-            >
-              <Ionicons name="ellipsis-horizontal" size={20} color="#444" />
-              <Text style={[styles.btnSocialText, { color: '#444' }]}>
-                Otro método
-              </Text>
-            </Pressable>
-          </View>
-        </SafeAreaView>
-      </ImageBackground>
+      <View style={styles.footer}>
+        <Text style={styles.footerText}>By continuing, you agree to our Terms of Service and Privacy Policy</Text>
+      </View>
     </View>
-  );
+  )
 }
 
-const STATUS_BAR_HEIGHT = RNStatusBar.currentHeight || 24;
-
 const styles = StyleSheet.create({
-  screen: {
-    flex: 1,
-  },
-  statusBarBackground: {
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    right: 0,
-    height: STATUS_BAR_HEIGHT,
-    backgroundColor: '#E94864',
-  },
-  bg: {
-    flex: 1,
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-  },
   container: {
     flex: 1,
-    paddingHorizontal: 24,
-    justifyContent: 'space-between',
-  },
-  skipBtn: {
-    alignSelf: 'flex-end',
-    padding: 8,
-  },
-  skipText: {
-    color: '#fff',
-    fontSize: 14,
-    textDecorationLine: 'underline',
+    backgroundColor: "#E94864",
+    justifyContent: "space-between",
   },
   header: {
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  logo: {
-    width: 180,
-    height: 60,
-    marginBottom: 16,
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    paddingHorizontal: 40,
   },
   title: {
-    fontSize: 28,
-    fontWeight: '700',
-    color: '#fff',
+    fontSize: 24,
+    color: "white",
+    marginBottom: 8,
+  },
+  appName: {
+    fontSize: 36,
+    fontWeight: "bold",
+    color: "white",
+    marginBottom: 16,
+    textAlign: "center",
   },
   subtitle: {
     fontSize: 16,
-    color: '#ddd',
-    marginTop: 8,
+    color: "rgba(255,255,255,0.8)",
+    textAlign: "center",
+    lineHeight: 24,
   },
-  buttonsContainer: {
-    width: '100%',
-    paddingHorizontal: 8,
-    marginBottom: 24,
+  content: {
+    paddingHorizontal: 40,
+    paddingBottom: 40,
   },
-  btnSocial: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#fff',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-    borderRadius: 25,
+  button: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 16,
+    borderRadius: 12,
     marginBottom: 16,
-    shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
-    elevation: 3,
-    justifyContent: 'center',
   },
-  btnSocialText: {
+  loginButton: {
+    backgroundColor: "rgba(255,255,255,0.2)",
+    borderWidth: 2,
+    borderColor: "white",
+  },
+  guestButton: {
+    backgroundColor: "white",
+  },
+  buttonIcon: {
+    marginRight: 8,
+  },
+  loginButtonText: {
+    color: "white",
     fontSize: 16,
-    fontWeight: '600',
-    marginLeft: 12,
+    fontWeight: "600",
   },
-  btnGoogleBorder: {
-    borderWidth: 1,
-    borderColor: '#DB4437',
+  guestButtonText: {
+    color: "#E94864",
+    fontSize: 16,
+    fontWeight: "600",
   },
-  btnFacebookBorder: {
-    borderWidth: 1,
-    borderColor: '#1877F2',
+  footer: {
+    paddingHorizontal: 40,
+    paddingBottom: 40,
   },
-  btnOtherBorder: {
-    borderWidth: 1,
-    borderColor: '#CCC',
+  footerText: {
+    fontSize: 12,
+    color: "rgba(255,255,255,0.7)",
+    textAlign: "center",
+    lineHeight: 18,
   },
-});
+})
+
+export default LoginScreen

@@ -1,16 +1,24 @@
-// WeeklyDealsCarousel.js
-import React from 'react';
-import { View, Text, Image, StyleSheet } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import Carousel from 'react-native-reanimated-carousel';
-import AnimatedDotsCarousel from 'react-native-animated-dots-carousel';
+"use client";
+
+import React from "react";
+import {
+  View,
+  Text,
+  Image,
+  StyleSheet,
+  Dimensions,
+} from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import Carousel from "react-native-reanimated-carousel";
+import AnimatedDotsCarousel from "react-native-animated-dots-carousel";
+
+const { width } = Dimensions.get("window");
 
 const WeeklyDealsCarousel = ({
-  weeklyDeals = [],           // ← valor por defecto
-  currentIndex = 0,           // ← valor por defecto
-  setCurrentIndex = () => {}, // ← valor por defecto
+  weeklyDeals = [],
+  currentIndex = 0,
+  setCurrentIndex = () => {},
 }) => {
-  // Si no hay datos, no renderizo nada
   if (!Array.isArray(weeklyDeals) || weeklyDeals.length === 0) {
     return null;
   }
@@ -29,37 +37,37 @@ const WeeklyDealsCarousel = ({
     <View style={styles.wrapper}>
       <Carousel
         loop
-        width={320}
-        height={140}
         autoPlay
         data={weeklyDeals}
-        onSnapToItem={setCurrentIndex}
+        width={width - 32}
+        height={140}
         scrollAnimationDuration={1200}
         mode="parallax"
         modeConfig={{
           parallaxScrollingScale: 0.9,
           parallaxScrollingOffset: 40,
         }}
+        onSnapToItem={setCurrentIndex}
         renderItem={({ item }) => (
           <LinearGradient
-            colors={item.gradientColors}
-            style={styles.mainDealCard}
+            colors={item.gradientColors || ["#FF7A00", "#FF9A00"]}
+            style={styles.card}
             start={{ x: 0, y: 0 }}
             end={{ x: 1, y: 1 }}
           >
-            <View style={styles.dealTextContainer}>
-              <Text style={styles.mainDealTitle}>{item.title}</Text>
-              <Text style={styles.mainDealSubtitle}>
-                {item.description}
-              </Text>
+            <View style={styles.dealContent}>
+              <View style={styles.textContainer}>
+                <Text style={styles.title}>{item.title}</Text>
+                <Text style={styles.description}>{item.description}</Text>
+              </View>
+              {item.image && (
+                <Image
+                  source={item.image}
+                  style={styles.image}
+                  resizeMode="cover"
+                />
+              )}
             </View>
-            {item.image && (
-              <Image
-                source={item.image}
-                style={styles.promoImage}
-                resizeMode="cover"
-              />
-            )}
           </LinearGradient>
         )}
       />
@@ -94,34 +102,40 @@ const styles = StyleSheet.create({
     paddingLeft: 16,
     marginTop: 12,
   },
-  mainDealCard: {
+  card: {
     flexDirection: "row",
     borderRadius: 20,
-    padding: 15,
-    marginRight: 20,
-    alignItems: "center",
-    width: 320,
+    padding: 16,
     height: 140,
     justifyContent: "space-between",
+    alignItems: "center",
+    marginRight: 16,
   },
-  dealTextContainer: {
+  dealContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     flex: 1,
-    paddingRight: 10,
   },
-  mainDealTitle: {
-    color: "#fff",
-    fontWeight: "bold",
+  textContainer: {
+    flex: 1,
+    paddingRight: 12,
+  },
+  title: {
     fontSize: 20,
-  },
-  mainDealSubtitle: {
+    fontWeight: "bold",
     color: "#fff",
-    fontSize: 14,
-    marginTop: 8,
+    marginBottom: 8,
   },
-  promoImage: {
+  description: {
+    fontSize: 14,
+    color: "#fff",
+    opacity: 0.9,
+  },
+  image: {
     width: 110,
     height: 110,
-    borderRadius: 60,
+    borderRadius: 55,
   },
 });
 

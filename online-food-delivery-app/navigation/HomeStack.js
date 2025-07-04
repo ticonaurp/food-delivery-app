@@ -1,9 +1,8 @@
-// navigation/HomeStack.js
 import React from 'react';
 import { createStackNavigator } from '@react-navigation/stack';
 import HomeScreen from '../screens/HomeScreen';
 import NearMeScreen from '../screens/NearMeScreen';
-import DetailRestoran from '../screens/DetailRestoran'; // <-- AGREGADO
+import DetailRestoran from '../screens/DetailRestoran'; 
 
 const Stack = createStackNavigator();
 

@@ -1,12 +1,7 @@
-// metro.config.js
-const { getDefaultConfig } = require('expo/metro-config');
+const { getDefaultConfig } = require("expo/metro-config")
 
-const defaultConfig = getDefaultConfig(__dirname);
+const config = getDefaultConfig(__dirname)
 
-// Asegura que los archivos .cjs se resuelvan correctamente
-defaultConfig.resolver.sourceExts.push('cjs');
+config.resolver.platforms = ["native", "android", "ios", "web"]
 
-// 🔧 Desactiva la resolución de "exports" para evitar errores como el de 'auth'
-defaultConfig.resolver.unstable_enablePackageExports = false;
-
-module.exports = defaultConfig;
+module.exports = config
