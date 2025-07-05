@@ -1,57 +1,52 @@
-🛵 Online Food Delivery App
-Una aplicación móvil desarrollada con React Native, orientada a ofrecer una experiencia fluida de pedido de comida online, integración con Firebase, autenticación con Auth0 y funcionalidades como carrito, historial, seguimiento en tiempo real y wallet virtual.
+# Online Food Delivery App
 
-📱 Características principales
-🔐 Registro e inicio de sesión con Firebase/Auth0
+Aplicación móvil de delivery desarrollada con React Native, que brinda una experiencia moderna para realizar pedidos de comida online. Cuenta con integración a Firebase y Auth0 para autenticación segura, carrito de compras inteligente, historial de pedidos, seguimiento en tiempo real y un sistema de monedero virtual con coins.
 
-🍕 Explora restaurantes y menús filtrados por tipo
+---
 
-🛒 Carrito de compras inteligente, que agrupa por restaurante
+## Características principales
 
-🧾 Historial de pedidos con desglose detallado y totales
+- Registro e inicio de sesión seguro con Firebase y Auth0
+- Exploración de restaurantes y menús filtrados por tipo o popularidad
+- Carrito de compras agrupado por restaurante
+- Favoritos, búsquedas recientes y platos populares
+- Historial de pedidos con detalle completo
+- Seguimiento del estado del pedido en tiempo real
+- Monedero virtual con sistema de carga y descuento mediante coins
+- Pantalla de confirmación post-compra con opción de rastreo
+- Interfaz moderna con animaciones fluidas
+- Precios adaptados a soles peruanos (PEN)
 
-📍 Seguimiento del pedido con estados animados
+---
 
-❤️ Favoritos, búsquedas populares y recientes
+## Tecnologías utilizadas
 
-👛 Monedero virtual y sistema de coins
+| Herramienta           | Uso                                        |
+|-----------------------|--------------------------------------------|
+| React Native          | Desarrollo móvil multiplataforma           |
+| React Navigation      | Navegación entre pantallas                 |
+| Firebase (Auth & DB)  | Autenticación y almacenamiento de datos    |
+| Auth0                 | Login con proveedor externo                |
+| Context API           | Manejo de estados globales                 |
+| Expo                  | Desarrollo y despliegue rápido             |
+| Reanimated/Animatable | Animaciones y efectos visuales             |
+| Formato de moneda     | Adaptación local con soles peruanos (S/.)  |
 
-📦 Pantalla de éxito post-pago con opciones de rastreo
+---
 
-🔄 Diseño fluido y animaciones con react-native-reanimated y react-native-animatable
+## Instalación
 
-🧱 Tecnologías utilizadas
-⚛️ React Native
-
-🧭 React Navigation
-
-🔥 Firebase (Auth & Firestore)
-
-🔐 Auth0
-
-💾 Context API (Carrito, Usuario, Favoritos)
-
-📦 Expo
-
-💸 Formato de moneda en Soles Peruanos (PEN)
-
-🎨 Estilos optimizados para UX mobile
-
-🚀 Instalación
-Clona este repositorio:
-
-bash
-Copiar
-Editar
+1. Clona el repositorio:
+```bash
 git clone https://github.com/tu-usuario/online-food-delivery-app.git
 cd online-food-delivery-app
-Instala dependencias:
+Instala las dependencias:
 
 bash
 Copiar
 Editar
 npm install
-# o si usas yarn
+# o
 yarn install
 Inicia el proyecto con Expo:
 
@@ -59,38 +54,49 @@ bash
 Copiar
 Editar
 npx expo start
-🧪 Estructura de carpetas
+Estructura del proyecto
 bash
 Copiar
 Editar
-📁 /screens
-  ├── LoginScreen.js
-  ├── RegisterScreen.js
-  ├── HomeScreen.js
-  ├── RestaurantDetailScreen.js
-  ├── CartScreen.js
-  ├── SuccessScreen.js
-  ├── OrderTrackingScreen.js
-  ├── ProfileScreen.js
-  └── ...
-📁 /context
-📁 /components
-📁 /data
-📁 /utils
-📝 TODO / Próximas funcionalidades
-🌎 Integración con mapas (Google Maps)
+/screens
+│   HomeScreen.js
+│   SearchScreen.js
+│   RestaurantDetailScreen.js
+│   CartScreen.js
+│   SuccessScreen.js
+│   OrderTrackingScreen.js
+│   ProfileScreen.js
+│   RegisterScreen.js
+│   LoginScreen.js
+/context        // Contextos globales
+/components     // Componentes reutilizables
+/data           // Datasets y mockups
+/utils          // Funciones utilitarias
+Funcionalidades futuras
+Integración con Google Maps para ubicación de dirección
 
-📍 Selección dinámica de dirección
+Múltiples direcciones de entrega por usuario
 
-🔔 Notificaciones push
+Soporte para notificaciones push
 
-📊 Estadísticas de pedidos
+Panel de estadísticas
 
-🧾 Facturación automática
+Generación automática de boletas o facturas
 
-🤝 Autores
-Mathias Hernan Ticona Alvarez (Desarrollador principal)
-gerald
+Capturas de pantalla
+Sustituye las imágenes con tus propias capturas reales
 
-📄 Licencia
+Inicio	Carrito	Pedido confirmado
+
+Enlaces
+Proyecto en Expo: https://expo.dev/@tu-usuario/online-food-delivery-app
+
+Google Play (próximamente)
+
+Autores
+Mathias Hernan Ticona Alvarez — Desarrollador principal
+
+Gerald — Colaborador
+
+Licencia
 Este proyecto está bajo la licencia MIT. Libre para uso educativo y personal.
