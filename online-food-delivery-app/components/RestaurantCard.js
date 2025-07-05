@@ -10,10 +10,14 @@ const RestaurantCard = ({ item, onPress }) => {
   const authContext = useContext(AuthContext)
   const cartContext = useContext(CartContext)
 
+  // Verificar que item existe
+  if (!item || !item.id) {
+    return null
+  }
+
   const favoriteRestaurants = authContext?.favoriteRestaurants || []
   const toggleFavoriteRestaurant = authContext?.toggleFavoriteRestaurant
   const canAddItem = cartContext?.canAddItem
-
   const isFavorite = favoriteRestaurants.includes(item.id)
   const canAddFromThisRestaurant = canAddItem ? canAddItem(item) : true
 
@@ -23,13 +27,19 @@ const RestaurantCard = ({ item, onPress }) => {
     }
   }
 
+  const handlePress = () => {
+    if (onPress && typeof onPress === "function") {
+      onPress(item)
+    }
+  }
+
   return (
-    <TouchableOpacity style={styles.container} onPress={() => onPress?.(item)}>
+    <TouchableOpacity style={styles.container} onPress={handlePress}>
       <View style={styles.imageContainer}>
-        <Image source={{ uri: item.image }} style={styles.image} />
+        <Image source={{ uri: item.image || "/placeholder.svg?height=160&width=300" }} style={styles.image} />
         <View style={styles.ratingBadge}>
           <Ionicons name="star" size={12} color="white" />
-          <Text style={styles.ratingText}>{item.rating}</Text>
+          <Text style={styles.ratingText}>{item.rating || "0.0"}</Text>
         </View>
         {!canAddFromThisRestaurant && (
           <View style={styles.unavailableBadge}>
@@ -37,24 +47,20 @@ const RestaurantCard = ({ item, onPress }) => {
           </View>
         )}
       </View>
-
       <View style={styles.contentContainer}>
         <View style={styles.headerRow}>
-          <Text style={styles.restaurantName}>{item.name}</Text>
+          <Text style={styles.restaurantName}>{item.name || "Restaurant"}</Text>
           <TouchableOpacity onPress={handleFavoritePress}>
             <Ionicons name={isFavorite ? "heart" : "heart-outline"} size={20} color={isFavorite ? "#E94864" : "#666"} />
           </TouchableOpacity>
         </View>
-
-        <Text style={styles.cuisineType}>{item.type}</Text>
-        <Text style={styles.description}>{item.description}</Text>
-
+        <Text style={styles.cuisineType}>{item.type || "Restaurant"}</Text>
+        <Text style={styles.description}>{item.description || "Great food"}</Text>
         <View style={styles.infoRow}>
           <Text style={styles.infoText}>
-            {item.distance} • {item.deliveryTime}
+            {item.distance || "0km"} • {item.deliveryTime || "30 min"}
           </Text>
         </View>
-
         <View style={styles.tagsContainer}>
           {item.promo && (
             <View style={[styles.tag, styles.discountTag]}>

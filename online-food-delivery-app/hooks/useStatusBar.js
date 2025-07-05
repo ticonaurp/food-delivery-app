@@ -13,5 +13,3 @@ export const useStatusBar = (style = "dark-content", backgroundColor = "#FFFFFF"
     }
   }, [style, backgroundColor])
 }
-
-

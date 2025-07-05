@@ -16,15 +16,11 @@ import { CartContext } from "../context/CartContext";
 import { AuthContext } from "../context/AuthContext";
 import ScreenWrapper from "../components/ScreenWrapper";
 import StatusBarConfig from "../components/StatusBarConfig";
+import { formatearSoles } from "../utils/currencyUtils"
 
 export default function CheckoutScreen() {
   const navigation = useNavigation();
-  const formatearSoles = (valor) => {
-    return valor.toLocaleString("es-PE", {
-      style: "currency",
-      currency: "PEN",
-    });
-  };
+
 
   // ✅ VERIFICAR QUE LOS CONTEXTOS EXISTAN
   const cartContext = useContext(CartContext);

@@ -4,10 +4,16 @@ import { View, Text, TouchableOpacity, Image, StyleSheet } from "react-native"
 import { LinearGradient } from "expo-linear-gradient"
 import { Ionicons } from "@expo/vector-icons"
 import { useNavigation } from "@react-navigation/native"
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import { useContext } from "react"
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5"
+import { FavoritesContext } from "../context/FavoritesContext"
+import { CommonActions } from "@react-navigation/native"
 
 const Header = ({ currentAddress, openAddressSheet }) => {
   const navigation = useNavigation()
+  const { getTotalFavorites } = useContext(FavoritesContext)
+
+  const totalFavorites = getTotalFavorites()
 
   return (
     <View style={styles.wrapper}>
@@ -30,20 +36,54 @@ const Header = ({ currentAddress, openAddressSheet }) => {
           </TouchableOpacity>
         </View>
         <View style={styles.headerIcons}>
-          <TouchableOpacity>
-            <FontAwesome5 name="heart" size={22} color="white" />
+          {/* ✅ CORAZÓN QUE NAVEGA A FAVORITOS */}
+          <TouchableOpacity
+            style={styles.favoriteButton}
+            onPress={() => navigation.navigate("FavoritesScreen")}
+            activeOpacity={0.7}
+          >
+            <FontAwesome5
+              name="heart"
+              size={22}
+              color={totalFavorites > 0 ? "#FFD93D" : "white"}
+              solid={totalFavorites > 0}
+            />
+            {totalFavorites > 0 && (
+              <View style={styles.favoriteBadge}>
+                <Text style={styles.favoriteBadgeText}>{totalFavorites > 99 ? "99+" : totalFavorites}</Text>
+              </View>
+            )}
           </TouchableOpacity>
-          <TouchableOpacity style={{ marginLeft: 16 }}>
+
+          {/* ✅ NOTIFICACIONES QUE NAVEGA A NOTIFICATIONSSCREEN */}
+          <TouchableOpacity
+            style={{ marginLeft: 16, padding: 4 }}
+            onPress={() =>
+  navigation.dispatch(
+    CommonActions.navigate({
+      name: "NotificationsScreen",
+    })
+  )
+}
+            activeOpacity={0.7}
+          >
             <Ionicons name="notifications-outline" size={22} color="white" />
           </TouchableOpacity>
         </View>
         <TouchableOpacity
           style={styles.searchBox}
           activeOpacity={0.8}
-          onPress={() => navigation.navigate("SearchScreen")}
+          onPress={() =>
+  navigation.dispatch(
+    CommonActions.navigate({
+      name: "SearchScreen",
+    })
+  )
+}
+
         >
           <Ionicons name="search-outline" size={20} color="#9CA3AF" style={{ marginRight: 8 }} />
-          <Text style={styles.input}>What would you like to eat?</Text>
+          <Text style={styles.input}>¿Qué te gustaría comer?</Text>
         </TouchableOpacity>
       </LinearGradient>
     </View>
@@ -93,6 +133,29 @@ const styles = StyleSheet.create({
     top: 50,
     flexDirection: "row",
     zIndex: 3,
+  },
+  favoriteButton: {
+    position: "relative",
+    padding: 4,
+  },
+  favoriteBadge: {
+    position: "absolute",
+    top: -4,
+    right: -4,
+    backgroundColor: "#FF6B35",
+    borderRadius: 10,
+    minWidth: 20,
+    height: 20,
+    alignItems: "center",
+    justifyContent: "center",
+    borderWidth: 2,
+    borderColor: "#fff",
+  },
+  favoriteBadgeText: {
+    color: "#fff",
+    fontSize: 11,
+    fontWeight: "bold",
+    textAlign: "center",
   },
   searchBox: {
     flexDirection: "row",

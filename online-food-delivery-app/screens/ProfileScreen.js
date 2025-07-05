@@ -48,7 +48,7 @@ export default function ProfileScreen({ navigation }) {
             <Ionicons name="person-circle" size={100} color="#E74C3C" />
           </View>
 
-          <Text style={styles.welcomeTitle}>Welcome to Restaurant App</Text>
+          <Text style={styles.welcomeTitle}>Welcome to FoodieGo</Text>
           <Text style={styles.welcomeSubtitle}>
             Sign in to access your profile, wallet, and order history
           </Text>

@@ -1,19 +1,38 @@
-"use client"
+"use client";
 
-import { useState, useContext } from "react"
-import { View, Text, Image, ScrollView, TouchableOpacity, StyleSheet, Dimensions, Alert } from "react-native"
-import { Ionicons } from "@expo/vector-icons"
-import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated"
-import { CartContext } from "../context/CartContext"
+import { useState, useContext } from "react";
+import {
+  View,
+  Text,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+  Alert,
+} from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
+import { CartContext } from "../context/CartContext";
+import { formatearSoles } from "../utils/currencyUtils"
 
-const { width } = Dimensions.get("window")
+const { width } = Dimensions.get("window");
 
 const RestaurantDetailScreen = ({ route, navigation }) => {
-  const { restaurant } = route.params
-  const [activeTab, setActiveTab] = useState("Popular")
-  const { addToCart, canAddItem, cartItems, getTotalItems } = useContext(CartContext)
+    const [favoriteDishIds, setFavoriteDishIds] = useState([]);
 
-  const tabs = ["Popular", "Appetizers", "Main Course", "Desserts", "Beverages"]
+  const { restaurant } = route.params;
+  const [activeTab, setActiveTab] = useState("Popular");
+  const { addToCart, canAddItem, cartItems, getTotalItems } =
+    useContext(CartContext);
+
+  const tabs = [
+    "Popular",
+    "Appetizers",
+    "Main Course",
+    "Desserts",
+    "Beverages",
+  ];
 
   const handleAddToCart = (dish) => {
     // Verificar si podemos agregar items de este restaurante
@@ -26,26 +45,29 @@ const RestaurantDetailScreen = ({ route, navigation }) => {
           {
             text: "Clear Cart & Add",
             onPress: () => {
-              addToCart(dish, restaurant)
-              Alert.alert("Added!", `${dish.name} has been added to your cart`)
+              addToCart(dish, restaurant);
+              Alert.alert("Added!", `${dish.name} has been added to your cart`);
             },
           },
-        ],
-      )
-      return
+        ]
+      );
+      return;
     }
 
     // Agregar al carrito
-    addToCart(dish, restaurant)
+    addToCart(dish, restaurant);
     Alert.alert("Added to Cart!", `${dish.name} has been added to your cart`, [
       { text: "Continue Shopping" },
       { text: "View Cart", onPress: () => navigation.navigate("Cart") },
-    ])
-  }
+    ]);
+  };
 
   const TopNavigation = () => (
     <View style={styles.topNavigation}>
-      <TouchableOpacity style={styles.navButton} onPress={() => navigation.goBack()}>
+      <TouchableOpacity
+        style={styles.navButton}
+        onPress={() => navigation.goBack()}
+      >
         <Ionicons name="arrow-back" size={20} color="white" />
       </TouchableOpacity>
       <TouchableOpacity style={styles.navButton}>
@@ -55,7 +77,7 @@ const RestaurantDetailScreen = ({ route, navigation }) => {
         <Ionicons name="heart-outline" size={20} color="white" />
       </TouchableOpacity>
     </View>
-  )
+  );
 
   const RestaurantInfo = () => (
     <Animated.View entering={FadeInUp.duration(600)} style={styles.infoCard}>
@@ -90,9 +112,12 @@ const RestaurantDetailScreen = ({ route, navigation }) => {
 
       <View style={styles.deliveryInfo}>
         <View>
-          <Text style={styles.deliveryTitle}>{restaurant.distance} distance</Text>
+          <Text style={styles.deliveryTitle}>
+            {restaurant.distance} distance
+          </Text>
           <Text style={styles.deliverySubtitle}>
-            Est. delivery fee {restaurant.deliveryFee} • Delivery in {restaurant.deliveryTime}
+            Est. delivery fee {restaurant.deliveryFee} • Delivery in{" "}
+            {restaurant.deliveryTime}
           </Text>
         </View>
         <TouchableOpacity>
@@ -100,24 +125,35 @@ const RestaurantDetailScreen = ({ route, navigation }) => {
         </TouchableOpacity>
       </View>
     </Animated.View>
-  )
+  );
 
   const DiscountSection = () => (
-    <Animated.View entering={FadeInDown.delay(200)} style={styles.discountSection}>
+    <Animated.View
+      entering={FadeInDown.delay(200)}
+      style={styles.discountSection}
+    >
       <Text style={styles.sectionTitle}>Discount for you</Text>
       <View style={styles.discountContainer}>
         {restaurant.discounts?.map((discount, index) => (
           <View key={discount.id} style={styles.discountCard}>
-            <View style={[styles.discountIcon, { backgroundColor: discount.color }]}>
-              <Ionicons name={discount.type === "discount" ? "pricetag" : "bicycle"} size={16} color="white" />
+            <View
+              style={[styles.discountIcon, { backgroundColor: discount.color }]}
+            >
+              <Ionicons
+                name={discount.type === "discount" ? "pricetag" : "bicycle"}
+                size={16}
+                color="white"
+              />
             </View>
             <Text style={styles.discountTitle}>{discount.title}</Text>
-            <Text style={styles.discountDescription}>{discount.description}</Text>
+            <Text style={styles.discountDescription}>
+              {discount.description}
+            </Text>
           </View>
         ))}
       </View>
     </Animated.View>
-  )
+  );
 
   const MenuTabs = () => (
     <View style={styles.tabsContainer}>
@@ -128,19 +164,30 @@ const RestaurantDetailScreen = ({ route, navigation }) => {
             style={[styles.tab, activeTab === tab && styles.activeTab]}
             onPress={() => setActiveTab(tab)}
           >
-            <Text style={[styles.tabText, activeTab === tab && styles.activeTabText]}>{tab}</Text>
+            <Text
+              style={[
+                styles.tabText,
+                activeTab === tab && styles.activeTabText,
+              ]}
+            >
+              {tab}
+            </Text>
           </TouchableOpacity>
         ))}
       </ScrollView>
     </View>
-  )
+  );
 
   const PopularDishes = () => (
-    <Animated.View entering={FadeInDown.delay(400)} style={styles.dishesSection}>
+    <Animated.View
+      entering={FadeInDown.delay(400)}
+      style={styles.dishesSection}
+    >
       <Text style={styles.sectionTitle}>Most Popular</Text>
       <View style={styles.dishesGrid}>
         {restaurant.popularDishes?.map((dish) => (
-          <View key={dish.id} style={styles.dishCard}>
+  <View key={dish.id} style={styles.dishCard}>
+
             <View style={styles.dishImageContainer}>
               <Image source={{ uri: dish.image }} style={styles.dishImage} />
               {dish.hasDiscount && (
@@ -148,21 +195,32 @@ const RestaurantDetailScreen = ({ route, navigation }) => {
                   <Text style={styles.dishDiscountText}>Extra discount</Text>
                 </View>
               )}
-              <TouchableOpacity style={styles.heartButton}>
-                <Ionicons name="heart-outline" size={16} color="#666" />
-              </TouchableOpacity>
+              <TouchableOpacity
+  style={styles.heartButton}
+  onPress={() => navigation.navigate("FavoriteScreen")}
+>
+  <Ionicons name="heart-outline" size={16} color="#666" />
+</TouchableOpacity>
+
             </View>
             <View style={styles.dishInfo}>
               <Text style={styles.dishName}>{dish.name}</Text>
               <View style={styles.priceContainer}>
                 <Text style={styles.discountPrice}>
-                  Rp {(dish.discountPrice || dish.originalPrice).toLocaleString("id-ID")}
+                  {formatearSoles(dish.discountPrice || dish.originalPrice)}
                 </Text>
-                {dish.hasDiscount && dish.originalPrice !== dish.discountPrice && (
-                  <Text style={styles.originalPrice}>Rp {dish.originalPrice.toLocaleString("id-ID")}</Text>
-                )}
+
+                {dish.hasDiscount &&
+                  dish.originalPrice !== dish.discountPrice && (
+                    <Text style={styles.originalPrice}>
+                      {formatearSoles(dish.originalPrice)}
+                    </Text>
+                  )}
               </View>
-              <TouchableOpacity style={styles.addButton} onPress={() => handleAddToCart(dish)}>
+              <TouchableOpacity
+                style={styles.addButton}
+                onPress={() => handleAddToCart(dish)}
+              >
                 <Text style={styles.addButtonText}>Add</Text>
               </TouchableOpacity>
             </View>
@@ -170,53 +228,56 @@ const RestaurantDetailScreen = ({ route, navigation }) => {
         ))}
       </View>
     </Animated.View>
-  )
+  );
 
   // Mostrar contenido según la tab activa
   const renderTabContent = () => {
     switch (activeTab) {
       case "Popular":
-        return <PopularDishes />
+        return <PopularDishes />;
       case "Appetizers":
         return (
           <View style={styles.dishesSection}>
             <Text style={styles.sectionTitle}>Appetizers</Text>
             <Text style={styles.comingSoon}>Coming soon...</Text>
           </View>
-        )
+        );
       case "Main Course":
         return (
           <View style={styles.dishesSection}>
             <Text style={styles.sectionTitle}>Main Course</Text>
             <Text style={styles.comingSoon}>Coming soon...</Text>
           </View>
-        )
+        );
       case "Desserts":
         return (
           <View style={styles.dishesSection}>
             <Text style={styles.sectionTitle}>Desserts</Text>
             <Text style={styles.comingSoon}>Coming soon...</Text>
           </View>
-        )
+        );
       case "Beverages":
         return (
           <View style={styles.dishesSection}>
             <Text style={styles.sectionTitle}>Beverages</Text>
             <Text style={styles.comingSoon}>Coming soon...</Text>
           </View>
-        )
+        );
       default:
-        return <PopularDishes />
+        return <PopularDishes />;
     }
-  }
+  };
 
-  const totalItems = getTotalItems()
+  const totalItems = getTotalItems();
 
   return (
     <View style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={styles.imageContainer}>
-          <Image source={{ uri: restaurant.image }} style={styles.restaurantImage} />
+          <Image
+            source={{ uri: restaurant.image }}
+            style={styles.restaurantImage}
+          />
           <TopNavigation />
         </View>
 
@@ -227,7 +288,10 @@ const RestaurantDetailScreen = ({ route, navigation }) => {
       </ScrollView>
 
       {totalItems > 0 && (
-        <TouchableOpacity style={styles.cartButton} onPress={() => navigation.navigate("Cart")}>
+        <TouchableOpacity
+          style={styles.cartButton}
+          onPress={() => navigation.navigate("Cart")}
+        >
           <View style={styles.cartButtonContent}>
             <View style={styles.cartBadge}>
               <Text style={styles.cartBadgeText}>{totalItems}</Text>
@@ -238,8 +302,8 @@ const RestaurantDetailScreen = ({ route, navigation }) => {
         </TouchableOpacity>
       )}
     </View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -568,6 +632,6 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: "center",
   },
-})
+});
 
-export default RestaurantDetailScreen
+export default RestaurantDetailScreen;

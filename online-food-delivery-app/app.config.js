@@ -1,7 +1,7 @@
 export default {
   expo: {
-    name: "Restaurant App",
-    slug: "restaurant-app",
+    name: "FoodieGo",
+    slug: "FoodieGo",
     version: "1.0.0",
     orientation: "portrait",
     userInterfaceStyle: "light",
@@ -12,26 +12,28 @@ export default {
     assetBundlePatterns: ["**/*"],
     ios: {
       supportsTablet: true,
-      bundleIdentifier: "com.yourcompany.restaurantapp",
+      bundleIdentifier: "com.yourcompany.FoodieGo",
     },
     android: {
       adaptiveIcon: {
         backgroundColor: "#FFFFFF",
       },
-      package: "com.yourcompany.restaurantapp",
+      package: "com.yourcompany.FoodieGo",
     },
     web: {},
     extra: {
-
-        apiKey: "AIzaSyBkKHooC7L5oHPSJUEjCFO0nswTHzhIp60",
-  authDomain: "onlinedeliveryapp-19236.firebaseapp.com",
-  projectId: "onlinedeliveryapp-19236",
-  storageBucket: "onlinedeliveryapp-19236.appspot.com",
-  messagingSenderId: "314147140443",
-  appId: "1:314147140443:web:a1ecbe9f3879bdf091607e",
+      apiKey: "AIzaSyBkKHooC7L5oHPSJUEjCFO0nswTHzhIp60",
+      authDomain: "onlinedeliveryapp-19236.firebaseapp.com",
+      projectId: "onlinedeliveryapp-19236",
+      storageBucket: "onlinedeliveryapp-19236.appspot.com",
+      messagingSenderId: "314147140443",
+      appId: "1:314147140443:web:a1ecbe9f3879bdf091607e",
 
       auth0Domain: "dev-ix8deo5de8ryya1n.us.auth0.com",
       auth0ClientId: "U3WOrnybeZnBNvu4PrZSudWuHjkTMvai",
+      eas: {
+        projectId: "cd32ba13-9784-4564-92f2-416a9cecd2e1",
+      },
     },
   },
-}
+};

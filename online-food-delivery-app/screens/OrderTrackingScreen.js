@@ -1,51 +1,65 @@
-"use client"
+"use client";
 
-import { useState, useEffect, useContext } from "react"
-import { View, Text, StyleSheet, ScrollView } from "react-native"
-import { Ionicons } from "@expo/vector-icons"
-import { AuthContext } from "../context/AuthContext"
-import Animated, { FadeInDown } from "react-native-reanimated"
+import { useState, useEffect, useContext } from "react";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
+import { AuthContext } from "../context/AuthContext";
+import Animated, { FadeInDown } from "react-native-reanimated";
+import { formatearSoles } from "../utils/currencyUtils";
 
 const OrderTrackingScreen = ({ route }) => {
-  const { orderId } = route.params
-  const { orderHistory } = useContext(AuthContext)
-  const [order, setOrder] = useState(null)
+  const { orderId } = route.params;
+  const { orderHistory } = useContext(AuthContext);
+  const [order, setOrder] = useState(null);
 
   useEffect(() => {
-    const foundOrder = orderHistory.find((o) => o.id === orderId)
-    setOrder(foundOrder)
-  }, [orderId, orderHistory])
+    const foundOrder = orderHistory.find((o) => o.id === orderId);
+    setOrder(foundOrder);
+  }, [orderId, orderHistory]);
 
   const trackingSteps = [
     { key: "pending", title: "Order Confirmed", icon: "checkmark-circle" },
     { key: "preparing", title: "Preparing Your Food", icon: "restaurant" },
     { key: "on_way", title: "On the Way", icon: "bicycle" },
     { key: "delivered", title: "Delivered", icon: "home" },
-  ]
+  ];
 
   const getCurrentStepIndex = (status) => {
-    return trackingSteps.findIndex((step) => step.key === status)
-  }
+    return trackingSteps.findIndex((step) => step.key === status);
+  };
 
   if (!order) {
     return (
       <View style={styles.container}>
         <Text style={styles.errorText}>Order not found</Text>
       </View>
-    )
+    );
   }
 
-  const currentStepIndex = getCurrentStepIndex(order.status)
+  const currentStepIndex = getCurrentStepIndex(order.status);
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      <Animated.View entering={FadeInDown.duration(400)} style={styles.orderInfo}>
-        <Text style={styles.orderId}>Order #{order.id.slice(-8).toUpperCase()}</Text>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
+      <Animated.View
+        entering={FadeInDown.duration(400)}
+        style={styles.orderInfo}
+      >
+        <Text style={styles.orderId}>
+          Order #{order.id.slice(-8).toUpperCase()}
+        </Text>
         <Text style={styles.restaurantName}>{order.restaurant?.name}</Text>
-        <Text style={styles.estimatedTime}>Estimated delivery: {order.estimatedDelivery}</Text>
+        <Text style={styles.estimatedTime}>
+          Estimated delivery: {order.estimatedDelivery}
+        </Text>
       </Animated.View>
 
-      <Animated.View entering={FadeInDown.delay(200)} style={styles.trackingContainer}>
+      <Animated.View
+        entering={FadeInDown.delay(200)}
+        style={styles.trackingContainer}
+      >
         <Text style={styles.sectionTitle}>Order Status</Text>
         {trackingSteps.map((step, index) => (
           <View key={step.key} style={styles.trackingStep}>
@@ -54,18 +68,24 @@ const OrderTrackingScreen = ({ route }) => {
                 style={[
                   styles.stepCircle,
                   {
-                    backgroundColor: index <= currentStepIndex ? "#4CAF50" : "#E0E0E0",
+                    backgroundColor:
+                      index <= currentStepIndex ? "#4CAF50" : "#E0E0E0",
                   },
                 ]}
               >
-                <Ionicons name={step.icon} size={20} color={index <= currentStepIndex ? "white" : "#999"} />
+                <Ionicons
+                  name={step.icon}
+                  size={20}
+                  color={index <= currentStepIndex ? "white" : "#999"}
+                />
               </View>
               {index < trackingSteps.length - 1 && (
                 <View
                   style={[
                     styles.stepLine,
                     {
-                      backgroundColor: index < currentStepIndex ? "#4CAF50" : "#E0E0E0",
+                      backgroundColor:
+                        index < currentStepIndex ? "#4CAF50" : "#E0E0E0",
                     },
                   ]}
                 />
@@ -83,20 +103,28 @@ const OrderTrackingScreen = ({ route }) => {
               >
                 {step.title}
               </Text>
-              {index === currentStepIndex && <Text style={styles.currentStep}>Current Status</Text>}
+              {index === currentStepIndex && (
+                <Text style={styles.currentStep}>Current Status</Text>
+              )}
             </View>
           </View>
         ))}
       </Animated.View>
 
-      <Animated.View entering={FadeInDown.delay(400)} style={styles.orderDetails}>
+      <Animated.View
+        entering={FadeInDown.delay(400)}
+        style={styles.orderDetails}
+      >
         <Text style={styles.sectionTitle}>Order Details</Text>
         {order.items.map((item, index) => (
           <View key={index} style={styles.orderItem}>
             <Text style={styles.itemQuantity}>{item.quantity}x</Text>
             <Text style={styles.itemName}>{item.name}</Text>
             <Text style={styles.itemPrice}>
-              Rp {((item.discountPrice || item.originalPrice || item.price) * item.quantity).toLocaleString("id-ID")}
+              {formatearSoles(
+                (item.discountPrice || item.originalPrice || item.price) *
+                  item.quantity
+              )}
             </Text>
           </View>
         ))}
@@ -104,29 +132,33 @@ const OrderTrackingScreen = ({ route }) => {
         <View style={styles.orderSummary}>
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Subtotal</Text>
-            <Text style={styles.summaryValue}>Rp {order.subtotal.toLocaleString("id-ID")}</Text>
+            <Text style={styles.summaryValue}>{formatearSoles(order.subtotal)}</Text>
+
           </View>
           <View style={styles.summaryRow}>
             <Text style={styles.summaryLabel}>Delivery Fee</Text>
-            <Text style={styles.summaryValue}>Rp {order.deliveryFee.toLocaleString("id-ID")}</Text>
+            <Text style={styles.summaryValue}>{formatearSoles(order.deliveryFee)}</Text>
+
           </View>
           {order.coinsUsed > 0 && (
             <View style={styles.summaryRow}>
               <Text style={styles.summaryLabel}>Coins Discount</Text>
               <Text style={[styles.summaryValue, { color: "#4CAF50" }]}>
-                -Rp {(order.coinsUsed * 1000).toLocaleString("id-ID")}
-              </Text>
+  -{formatearSoles(order.coinsUsed * 1000)}
+</Text>
+
             </View>
           )}
           <View style={[styles.summaryRow, styles.totalRow]}>
             <Text style={styles.totalLabel}>Total</Text>
-            <Text style={styles.totalValue}>Rp {order.finalAmount.toLocaleString("id-ID")}</Text>
+            <Text style={styles.totalValue}>{formatearSoles(order.finalAmount)}</Text>
+
           </View>
         </View>
       </Animated.View>
     </ScrollView>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   container: {
@@ -275,6 +307,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginTop: 50,
   },
-})
+});
 
-export default OrderTrackingScreen
+export default OrderTrackingScreen;

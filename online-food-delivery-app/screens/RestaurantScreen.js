@@ -6,6 +6,7 @@ import { useNavigation } from "@react-navigation/native"
 import Ionicons from "@expo/vector-icons/Ionicons"
 import { CartContext } from "../context/CartContext" // ← IMPORTAR CONTEXTO
 import { useSafeAreaInsets } from "react-native-safe-area-context"
+import { formatearSoles } from "../utils/currencyUtils"
 
 const RestaurantScreen = ({ route }) => {
   const { restaurant } = route.params
@@ -97,15 +98,20 @@ const RestaurantScreen = ({ route }) => {
             <Text style={styles.menuTitle}>{item.name}</Text>
             <Text style={styles.menuDescription}>{item.description}</Text>
             <Text style={styles.menuPrice}>
-              {item.discountPrice ? (
-                <>
-                  <Text style={styles.originalPrice}>Rp {item.price?.toLocaleString()}</Text>{" "}
-                  <Text style={styles.discountPrice}>Rp {item.discountPrice?.toLocaleString()}</Text>
-                </>
-              ) : (
-                `Rp ${item.price?.toLocaleString()}`
-              )}
-            </Text>
+  {item.discountPrice ? (
+    <>
+      <Text style={styles.originalPrice}>
+        {formatearSoles(item.price)}
+      </Text>{" "}
+      <Text style={styles.discountPrice}>
+        {formatearSoles(item.discountPrice)}
+      </Text>
+    </>
+  ) : (
+    formatearSoles(item.price)
+  )}
+</Text>
+
           </View>
 
           {/* ← IMAGEN DEL PRODUCTO */}

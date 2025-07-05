@@ -6,97 +6,97 @@ import { StatusBar } from "expo-status-bar"
 import { Ionicons } from "@expo/vector-icons"
 import { AuthContext } from "../context/AuthContext"
 
-const LoginScreen = ({ navigation }) => {
+const PantallaLogin = ({ navigation }) => {
   const { login, loginAsGuest } = useContext(AuthContext)
   const [isLoading, setIsLoading] = useState(false)
 
-  const handleLogin = async () => {
+  const manejarLogin = async () => {
     setIsLoading(true)
     try {
       await login()
     } catch (error) {
-      Alert.alert("Error", "Failed to login. Please try again.")
+      Alert.alert("Error", "Error al iniciar sesión. Por favor, inténtalo de nuevo.")
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleGuestLogin = async () => {
+  const manejarLoginComoInvitado = async () => {
     setIsLoading(true)
     try {
-      await loginAsGuest("Default Address", null)
+      await loginAsGuest("Dirección Predeterminada", null)
       navigation.replace("MainTabs")
     } catch (error) {
-      Alert.alert("Error", "Failed to continue as guest. Please try again.")
+      Alert.alert("Error", "Error al continuar como invitado. Por favor, inténtalo de nuevo.")
     } finally {
       setIsLoading(false)
     }
   }
 
   return (
-    <View style={styles.container}>
+    <View style={estilos.contenedor}>
       <StatusBar style="light" />
 
-      <View style={styles.header}>
-        <Text style={styles.title}>Welcome to</Text>
-        <Text style={styles.appName}>Restaurant App</Text>
-        <Text style={styles.subtitle}>Delicious food delivered to your door</Text>
+      <View style={estilos.encabezado}>
+        <Text style={estilos.titulo}>Bienvenido a</Text>
+        <Text style={estilos.nombreApp}>FoodieGo</Text>
+        <Text style={estilos.subtitulo}>Comida deliciosa entregada a tu puerta</Text>
       </View>
 
-      <View style={styles.content}>
-        <TouchableOpacity style={[styles.button, styles.loginButton]} onPress={handleLogin} disabled={isLoading}>
-          <Ionicons name="log-in" size={20} color="white" style={styles.buttonIcon} />
-          <Text style={styles.loginButtonText}>{isLoading ? "Logging in..." : "Login with Auth0"}</Text>
+      <View style={estilos.contenido}>
+        <TouchableOpacity style={[estilos.boton, estilos.botonLogin]} onPress={manejarLogin} disabled={isLoading}>
+          <Ionicons name="log-in" size={20} color="white" style={estilos.iconoBoton} />
+          <Text style={estilos.textoBotonLogin}>{isLoading ? "Iniciando sesión..." : "Iniciar sesión con Auth0"}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={[styles.button, styles.guestButton]} onPress={handleGuestLogin} disabled={isLoading}>
-          <Ionicons name="person" size={20} color="#E94864" style={styles.buttonIcon} />
-          <Text style={styles.guestButtonText}>{isLoading ? "Please wait..." : "Continue as Guest"}</Text>
+        <TouchableOpacity style={[estilos.boton, estilos.botonInvitado]} onPress={manejarLoginComoInvitado} disabled={isLoading}>
+          <Ionicons name="person" size={20} color="#E94864" style={estilos.iconoBoton} />
+          <Text style={estilos.textoBotonInvitado}>{isLoading ? "Por favor espera..." : "Continuar como Invitado"}</Text>
         </TouchableOpacity>
       </View>
 
-      <View style={styles.footer}>
-        <Text style={styles.footerText}>By continuing, you agree to our Terms of Service and Privacy Policy</Text>
+      <View style={estilos.pie}>
+        <Text style={estilos.textoPie}>Al continuar, aceptas nuestros Términos de Servicio y Política de Privacidad</Text>
       </View>
     </View>
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
+const estilos = StyleSheet.create({
+  contenedor: {
     flex: 1,
     backgroundColor: "#E94864",
     justifyContent: "space-between",
   },
-  header: {
+  encabezado: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     paddingHorizontal: 40,
   },
-  title: {
+  titulo: {
     fontSize: 24,
     color: "white",
     marginBottom: 8,
   },
-  appName: {
+  nombreApp: {
     fontSize: 36,
     fontWeight: "bold",
     color: "white",
     marginBottom: 16,
     textAlign: "center",
   },
-  subtitle: {
+  subtitulo: {
     fontSize: 16,
     color: "rgba(255,255,255,0.8)",
     textAlign: "center",
     lineHeight: 24,
   },
-  content: {
+  contenido: {
     paddingHorizontal: 40,
     paddingBottom: 40,
   },
-  button: {
+  boton: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
@@ -104,32 +104,32 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     marginBottom: 16,
   },
-  loginButton: {
+  botonLogin: {
     backgroundColor: "rgba(255,255,255,0.2)",
     borderWidth: 2,
     borderColor: "white",
   },
-  guestButton: {
+  botonInvitado: {
     backgroundColor: "white",
   },
-  buttonIcon: {
+  iconoBoton: {
     marginRight: 8,
   },
-  loginButtonText: {
+  textoBotonLogin: {
     color: "white",
     fontSize: 16,
     fontWeight: "600",
   },
-  guestButtonText: {
+  textoBotonInvitado: {
     color: "#E94864",
     fontSize: 16,
     fontWeight: "600",
   },
-  footer: {
+  pie: {
     paddingHorizontal: 40,
     paddingBottom: 40,
   },
-  footerText: {
+  textoPie: {
     fontSize: 12,
     color: "rgba(255,255,255,0.7)",
     textAlign: "center",
@@ -137,4 +137,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default LoginScreen
+export default PantallaLogin

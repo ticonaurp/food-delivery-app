@@ -1,38 +1,48 @@
-"use client"
 
-import { useState, useEffect, useContext } from "react"
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Image, SafeAreaView } from "react-native"
-import { useNavigation, useRoute } from "@react-navigation/native"
-import Ionicons from "@expo/vector-icons/Ionicons"
-import { CartContext } from "../context/CartContext"
-import { getFilteredDishes } from "../data/restaurants"
+"use client";
+
+import { useState, useEffect, useContext } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Image,
+  SafeAreaView,
+} from "react-native";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { CartContext } from "../context/CartContext";
+import { getFilteredDishes } from "../data/restaurants";
+import { formatearSoles } from "../utils/currencyUtils"
 
 export default function FilteredPlatosScreen() {
-  const navigation = useNavigation()
-  const route = useRoute()
-  const { filterType, title } = route.params || {}
+  const navigation = useNavigation();
+  const route = useRoute();
+  const { filterType, title } = route.params || {};
 
-  const [dishes, setDishes] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [dishes, setDishes] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const { addToCart, canAddItem, selectedRestaurant } = useContext(CartContext)
+  const { addToCart, canAddItem, selectedRestaurant } = useContext(CartContext);
 
   useEffect(() => {
-    loadDishes()
-  }, [filterType])
+    loadDishes();
+  }, [filterType]);
 
   const loadDishes = async () => {
     try {
-      setLoading(true)
-      await new Promise((resolve) => setTimeout(resolve, 300))
-      const filteredDishes = getFilteredDishes(filterType)
-      setDishes(filteredDishes)
+      setLoading(true);
+      await new Promise((resolve) => setTimeout(resolve, 300));
+      const filteredDishes = getFilteredDishes(filterType);
+      setDishes(filteredDishes);
     } catch (error) {
-      console.error(" Error loading dishes:", error)
+      console.error(" Error loading dishes:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleAddToCart = (dish) => {
     // ELIMINAMOS TODOS LOS ALERTS MOLESTOS
@@ -40,16 +50,16 @@ export default function FilteredPlatosScreen() {
 
     if (!canAddItem(dish.restaurant)) {
       // Solo mostrar alert si hay conflicto de restaurante
-      console.log("⚠️ Different restaurant, but adding anyway")
+      console.log("⚠️ Different restaurant, but adding anyway");
     }
 
     // Agregar al carrito sin interrupciones
-    addToCart(dish, dish.restaurant)
+    addToCart(dish, dish.restaurant);
 
     // NO más alerts de "Added to cart"
     // NO más "Continue shopping"
     //  Experiencia fluida y sin interrupciones
-  }
+  };
 
   const renderDishItem = ({ item: dish }) => (
     <View style={styles.dishCard}>
@@ -61,7 +71,13 @@ export default function FilteredPlatosScreen() {
           {dish.hasDiscount && (
             <View style={styles.discountBadge}>
               <Text style={styles.discountText}>
-                -{Math.round(((dish.originalPrice - dish.discountPrice) / dish.originalPrice) * 100)}%
+                -
+                {Math.round(
+                  ((dish.originalPrice - dish.discountPrice) /
+                    dish.originalPrice) *
+                    100
+                )}
+                %
               </Text>
             </View>
           )}
@@ -74,33 +90,47 @@ export default function FilteredPlatosScreen() {
         <View style={styles.restaurantInfo}>
           <Ionicons name="storefront-outline" size={14} color="#8E8E93" />
           <Text style={styles.restaurantName}>{dish.restaurant.name}</Text>
-          <Text style={styles.restaurantDistance}>• {dish.restaurant.distance}</Text>
+          <Text style={styles.restaurantDistance}>
+            • {dish.restaurant.distance}
+          </Text>
         </View>
 
         <View style={styles.priceRow}>
           <View style={styles.priceContainer}>
             {dish.hasDiscount ? (
               <>
-                <Text style={styles.originalPrice}>Rp {dish.originalPrice.toLocaleString()}</Text>
-                <Text style={styles.discountPrice}>Rp {dish.discountPrice.toLocaleString()}</Text>
+                <Text style={styles.originalPrice}>
+                  {formatearSoles(dish.originalPrice)}
+                </Text>
+                <Text style={styles.discountPrice}>
+                  {formatearSoles(dish.discountPrice)}
+                </Text>
               </>
             ) : (
-              <Text style={styles.price}>Rp {dish.originalPrice.toLocaleString()}</Text>
+              <Text style={styles.price}>
+                {formatearSoles(dish.originalPrice)}
+              </Text>
             )}
           </View>
 
-          <TouchableOpacity style={styles.addButton} onPress={() => handleAddToCart(dish)}>
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => handleAddToCart(dish)}
+          >
             <Ionicons name="add" size={20} color="#FFFFFF" />
           </TouchableOpacity>
         </View>
       </View>
     </View>
-  )
+  );
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.backButton}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.backButton}
+        >
           <Ionicons name="arrow-back" size={24} color="#1D1D1F" />
         </TouchableOpacity>
         <Text style={styles.title}>{title || "Platos Filtrados"}</Text>
@@ -128,7 +158,7 @@ export default function FilteredPlatosScreen() {
         />
       )}
     </SafeAreaView>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -280,4 +310,4 @@ const styles = StyleSheet.create({
     color: "#8E8E93",
     textAlign: "center",
   },
-})
+});

@@ -1,34 +1,35 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native"
-import Ionicons from "@expo/vector-icons/Ionicons"
-import { useCartActions } from "../hooks/useCartActions"
+import { useState } from "react";
+import { View, Text, StyleSheet, TouchableOpacity, Image } from "react-native";
+import Ionicons from "@expo/vector-icons/Ionicons";
+import { useCartActions } from "../hooks/useCartActions";
+import { formatearSoles } from "../utils/currencyUtils";
 
 // Componente de producto SIN MODALS MOLESTOS
 export default function ProductCard({ item, restaurant, style }) {
-  const [isAdding, setIsAdding] = useState(false)
-  const { addToCartSilently } = useCartActions()
+  const [isAdding, setIsAdding] = useState(false);
+  const { addToCartSilently } = useCartActions();
 
   const handleAddToCart = async () => {
-    if (isAdding) return // Prevenir doble tap
+    if (isAdding) return; // Prevenir doble tap
 
-    setIsAdding(true)
+    setIsAdding(true);
 
     // Agregar al carrito SILENCIOSAMENTE
-    const success = addToCartSilently(item, restaurant)
+    const success = addToCartSilently(item, restaurant);
 
     // Pequeña animación visual (opcional)
     setTimeout(() => {
-      setIsAdding(false)
-    }, 300)
+      setIsAdding(false);
+    }, 300);
 
     // ❌ NO MODALS
     // ❌ NO ALERTS
     // ❌ NO "Continue Shopping"
     // ❌ NO "View Cart"
     // ✅ Solo feedback visual sutil
-  }
+  };
 
   return (
     <View style={[styles.card, style]}>
@@ -44,11 +45,17 @@ export default function ProductCard({ item, restaurant, style }) {
           <View style={styles.priceContainer}>
             {item.hasDiscount ? (
               <>
-                <Text style={styles.originalPrice}>Rp {item.originalPrice?.toLocaleString()}</Text>
-                <Text style={styles.discountPrice}>Rp {item.discountPrice?.toLocaleString()}</Text>
+                <Text style={styles.originalPrice}>
+                  {formatearSoles(item.originalPrice)}
+                </Text>
+                <Text style={styles.discountPrice}>
+                  {formatearSoles(item.discountPrice)}
+                </Text>
               </>
             ) : (
-              <Text style={styles.price}>Rp {(item.price || item.originalPrice)?.toLocaleString()}</Text>
+              <Text style={styles.price}>
+                {formatearSoles(item.price || item.originalPrice)}
+              </Text>
             )}
           </View>
 
@@ -67,7 +74,7 @@ export default function ProductCard({ item, restaurant, style }) {
         </View>
       </View>
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -136,4 +143,4 @@ const styles = StyleSheet.create({
   addButtonActive: {
     backgroundColor: "#4CAF50",
   },
-})
+});

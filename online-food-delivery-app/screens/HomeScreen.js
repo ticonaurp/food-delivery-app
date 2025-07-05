@@ -9,19 +9,20 @@ import WalletCoins from "../components/WalletCoins"
 import QuickMenu from "../components/QuickMenu"
 import DailyDishes from "../components/DailyDishes"
 import AddressBottomSheet from "../components/AddressBottomSheet"
-import { Ionicons } from "@expo/vector-icons"
+
+import { AuthContext } from "../context/AuthContext"
+
+import FontAwesome6 from "react-native-vector-icons/FontAwesome6"
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5"
 import { MaterialIcons } from "@expo/vector-icons"
 import { MaterialCommunityIcons } from "@expo/vector-icons"
-import { AuthContext } from "../context/AuthContext"
-import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-
 
 export default function HomeScreen() {
   const { guestAddress, loginAsGuest } = useContext(AuthContext)
   const [currentAddress, setCurrentAddress] = useState("Cargando dirección...")
   const [currentIndex, setCurrentIndex] = useState(0)
   const [showMoreDishes, setShowMoreDishes] = useState(false)
+
   const scrollY = useRef(new Animated.Value(0)).current
   const fadeInWallet = useRef(new Animated.Value(0)).current
   const fadeInMenu = useRef(new Animated.Value(0)).current
@@ -33,12 +34,14 @@ export default function HomeScreen() {
       setCurrentAddress(guestAddress.address)
       return
     }
+
     ;(async () => {
       const { status } = await Location.requestForegroundPermissionsAsync()
       if (status !== "granted") {
         setCurrentAddress("Permiso denegado")
         return
       }
+
       const loc = await Location.getCurrentPositionAsync({})
       const [addr] = await Location.reverseGeocodeAsync(loc.coords)
       setCurrentAddress(`${addr.street || ""} ${addr.name || ""}`)
@@ -75,7 +78,10 @@ export default function HomeScreen() {
         style={styles.container}
         showsVerticalScrollIndicator={false}
         scrollEventThrottle={16}
-        onScroll={Animated.event([{ nativeEvent: { contentOffset: { y: scrollY } } }], { useNativeDriver: true })}
+        onScroll={Animated.event(
+          [{ nativeEvent: { contentOffset: { y: scrollY } } }],
+          { useNativeDriver: true }
+        )}
       >
         <Animated.View
           style={{
@@ -160,8 +166,8 @@ export default function HomeScreen() {
       <AddressBottomSheet
         sheetRef={sheetRef}
         onAddressSelected={(addr, coords) => {
-          loginAsGuest(addr, coords) // actualiza contexto global
-          setCurrentAddress(addr) // actualiza localmente
+          loginAsGuest(addr, coords)
+          setCurrentAddress(addr)
         }}
       />
     </>
@@ -175,54 +181,49 @@ const styles = StyleSheet.create({
   },
 })
 
-// 👇 tus datos de prueba traducidos
 const weeklyDeals = [
   {
     id: "1",
     title: "Ofertas del Día",
-    image: {
-      uri: "https://i.pinimg.com/736x/47/01/a5/4701a5bca5a98a06770921c031f974b8.jpg",
-    },
+    image: { uri: "https://i.pinimg.com/736x/47/01/a5/4701a5bca5a98a06770921c031f974b8.jpg" },
     description: "Hasta 75% de descuento",
     gradientColors: ["#FF7A00", "#FF9A00"],
+    filterType: "ofertasDelDia",
   },
   {
     id: "2",
     title: "Ofertas Semanales",
-    image: {
-      uri: "https://t4.ftcdn.net/jpg/13/74/45/89/360_F_1374458987_GeVuTEU2VLC7hzv2yfIt1AFwzHps1zLW.jpg",
-    },
+    image: { uri: "https://t4.ftcdn.net/jpg/13/74/45/89/360_F_1374458987_GeVuTEU2VLC7hzv2yfIt1AFwzHps1zLW.jpg" },
     description: "Hasta 50% de descuento",
     gradientColors: ["#FF4081", "#ff0000"],
+    filterType: "ofertasSemanales",
   },
   {
     id: "3",
     title: "Favoritos de la Semana",
-    image: {
-      uri: "https://myrecipeify.com/wp-content/uploads/2024/10/Chicken-Tempura-Role-8.webp",
-    },
+    image: { uri: "https://myrecipeify.com/wp-content/uploads/2024/10/Chicken-Tempura-Role-8.webp" },
     description: "Hasta 30% de descuento",
     gradientColors: ["#4facfe", "#00f2fe"],
+    filterType: "favoritosSemana",
   },
   {
     id: "4",
     title: "Tendencias Calientes",
-    image: {
-      uri: "https://www.thefoodinmybeard.com/content/taco/whitepeople/wpt10.jpg",
-    },
+    image: { uri: "https://www.thefoodinmybeard.com/content/taco/whitepeople/wpt10.jpg" },
     description: "Ofertas exclusivas",
     gradientColors: ["#43e97b", "#38f9d7"],
+    filterType: "tendencias",
   },
   {
     id: "5",
     title: "Solo para Ti",
-    image: {
-      uri: "https://images.immediate.co.uk/production/volatile/sites/30/2020/12/Noodles-with-chilli-oil-eggs-6ec34e9.jpg?quality=90&resize=556,505",
-    },
+    image: { uri: "https://images.immediate.co.uk/production/volatile/sites/30/2020/12/Noodles-with-chilli-oil-eggs-6ec34e9.jpg?quality=90&resize=556,505" },
     description: "Descuento sorpresa",
     gradientColors: ["#ff9a9e", "#fad0c4"],
+    filterType: "soloTi",
   },
-]
+];
+
 
 const quickMenuItems = [
   {
@@ -254,7 +255,7 @@ const quickMenuItems = [
     route: "FilteredPlatos",
     filterType: "entregaRapida",
   },
-];
+]
 
 const dailyDishes = [
   {
@@ -291,4 +292,3 @@ const additionalDishes = [
     color: "#f59e0b",
   },
 ]
-
