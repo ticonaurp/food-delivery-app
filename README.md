@@ -96,6 +96,7 @@ Google Play (próximamente)
 Autores
 Mathias Hernan Ticona Alvarez — Desarrollador principal
 
+Geraldin Nuñez Vasquez - Colaborador Desarrollador
 
 
 Licencia
