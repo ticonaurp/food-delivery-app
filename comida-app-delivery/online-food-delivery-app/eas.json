@@ -1,13 +1,18 @@
 {
   "cli": {
-    "version": ">=3.0.0"
+    "version": ">= 3.13.0"
   },
   "build": {
     "production": {
-      "developmentClient": false,
-      "distribution": "internal",
+      "env": {
+        "SENTRY_AUTH_TOKEN": "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",
+        "SENTRY_ORG": "ricardo-palma",
+        "SENTRY_PROJECT": "react-native-vr",
+        "EXPO_SENTRY_AUTO_UPLOAD": "true"
+      },
       "android": {
-        "buildType": "app-bundle"
+        "buildType": "apk",
+        "image": "latest"
       }
     }
   }

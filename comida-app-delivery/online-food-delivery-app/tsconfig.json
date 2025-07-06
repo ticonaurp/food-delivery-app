@@ -5,6 +5,8 @@
     "baseUrl": ".",
     "paths": {
       "~/*": ["./*"]
-    }
+    },
+    "allowJs": true, // Si mezclas .js y .ts
+    "jsx": "react-native"
   }
 }
