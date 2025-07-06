@@ -97,7 +97,7 @@ Google Play (próximamente)
 Autores
 Mathias Hernan Ticona Alvarez — Desarrollador principal
 
-Gerald — Colaborador desarrollador
+Geraldin Nuñez Vasquez — Colaborador desarrollador
 
 Licencia
 Este proyecto está bajo la licencia MIT. Libre para uso educativo y personal.
