@@ -2,6 +2,7 @@
 
 Aplicación móvil de delivery desarrollada con React Native, que brinda una experiencia moderna para realizar pedidos de comida online. Cuenta con integración a Firebase y Auth0 para autenticación segura, carrito de compras inteligente, historial de pedidos, seguimiento en tiempo real y un sistema de monedero virtual con coins.
 
+TODO SE ENCUENTRA EN LA RAMA mticona
 ---
 
 ## Características principales
